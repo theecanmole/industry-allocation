@@ -21,12 +21,13 @@ https://environment.govt.nz/assets/publications/GhG-Inventory/Summary-emissions-
 
 https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/eligibility/
 https://www.nzherald.co.nz/business/opinion-fairly-sharing-the-burden-is-necessary-for-climate-success/LT2DSAYNPOB4M5J77BMPXQUMJU/
+# load applications
 library(tidyr)
 library(readxl)
 library(dplyr)
+library(RColorBrewer)
 getwd()
-
-[1] "/media/user/RED/Industry-allocation" 
+[1] "/home/user/R/Industry-allocation"
 
 # obtain emission unit allocation to industry data from EPA Industrial Allocation webpage
 
@@ -42,9 +43,10 @@ excel_sheets("Industrial-Allocations-Final-Decisions.xlsx")
 
 Allocations <- read_excel("Industrial-Allocations-Final-Decisions.xlsx", sheet = "IA Final Decisions",skip=3)
 
-# rename column variables
+# rename column variables - which are in an odd order
 colnames(Allocations) <- c("Activity","Name","Year", "Allocation") 
-# can I reorder columns easily in base R? Yes.
+
+# can I reorder columns to a 'tidy' format easily in base R? Yes.
 head(Allocations[,c("Year","Activity","Name","Allocation")]) 
   Year           Activity                                Name Allocation
 1 2010 Aluminium smelting   New Zealand Aluminium Smelters Limited     210421
@@ -53,16 +55,275 @@ head(Allocations[,c("Year","Activity","Name","Allocation")])
 4 2010         Burnt lime               Perry Resources (2008) Ltd       4712
 5 2010         Burnt lime   Websters Hydrated Lime Company Limited        948
 6 2010   Carbamide (urea) Ballance Agri-Nutrients (Kapuni) Limited      93275 
+
 # reorder columns
 Allocations <- Allocations[,c("Year","Activity","Name","Allocation")] 
 names(Allocations)
 [1] "Year"       "Activity"   "Name"  "Allocation" 
 # make csv file of allocations data
-#write.table(Allocations, file = "Allocations.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
+write.table(Allocations, file = "Allocations.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
 # read in csv file
 Allocations<-read.csv("Allocations.csv")
-names(Allocations)
-[1] "Year"       "Activity"   "Name"       "Allocation"
+
+# How many emissions units have been given away from 2010 to 2020?
+sum(Allocations[["Allocation"]])
+[1] 55001914 
+# 55 million
+
+# How many emission units were allocated for each year
+annualallocations <- aggregate(Allocations[["Allocation"]] ~ Year, Allocations, sum)
+
+# check the data frame
+str(annualallocations) 
+'data.frame':	11 obs. of  2 variables:
+ $ Year                       : num  2010 2011 2012 2013 2014 ...
+ $ Allocations[["Allocation"]]: num  1763232 3461556 3451147 4815810 4484100
+
+# rename column variables
+colnames(annualallocations) <- c("Year", "Allocation") 
+
+# restate to 10^6 (millions) 
+annualallocations["Allocation"] <- annualallocations[["Allocation"]]/10^6
+
+str(annualallocations) 
+'data.frame':	11 obs. of  2 variables:
+ $ Year      : num  2010 2011 2012 2013 2014 ...
+ $ Allocation: num  1.76 3.46 3.45 4.82 4.48 ... 
+
+svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
+png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+par(mar=c(2.7,2.7,1,1)+0.1)
+plot(annualallocations[["Year"]],annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
+axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:8), labels = c(0:8),tick = TRUE)
+axis(side=4, tck=0.01, at = c(0:8), labels = FALSE, tick = TRUE)
+box(lwd=1)
+lines(annualallocations[["Year"]],annualallocations[["Allocation"]],col="#7570b3",lwd=2)
+points(annualallocations[["Year"]],annualallocations[["Allocation"]],col="#7570b3",pch=16)
+#lines(annualallocations[["Year"]],annualallocations[["Allocation"]],col="#1b9e77",lwd=1)
+#points(annualallocations[["Year"]],annualallocations[["Allocation"]],col="#1b9e77",cex=1,pch=15)
+#lines(annualallocations[["Year"]],annualallocations[["IndustryGHG"]],col="#d95f02",lwd=1)
+#points(annualallocations[["Year"]],annualallocations[["IndustryGHG"]],col="#d95f02",cex=1,pch=14)
+#lines(annualallocations[["Year"]],annualallocations[["Industry"]]/1000,col="#7570b3",lwd=1)
+#points(annualallocations[["Year"]],annualallocations[["Industrial"]]/1000,col="#7570b3",cex=1,pch=9)
+#lines(annualallocations[["Years"]],annualallocations[["Waste"]]/1000,col="#e7298a",lwd=1,lty=2)
+#points(annualallocations[["Years"]],annualallocations[["Waste"]]/1000,col="#e7298a",cex=1,pch=10)
+#lines(annualallocations[["Years"]],annualallocations[["LULUCF"]]/1000,col="#66a61e",lwd=1)
+#points(annualallocations[["Years"]],annualallocations[["LULUCF"]]/1000,col="#66a61e",cex=1,pch=17)
+mtext(side=1,line=-1.5,cex=1,"Source: EPA industrial allocation decisions")
+mtext(side=3,cex=1.5, line=-2.2,expression(paste("Emission units allocated to industry 2010 to 2020")) )
+mtext(side=2,cex=1, line=-1.5,expression(paste("million units")))
+mtext(side=3,line=-3.5,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
+mtext(side=4,cex=0.75, line=0.05,R.version.string)
+dev.off()
+
+# create table that is industrial allocation of emission units
+annualallocations[["Allocation"]] 
+[1] 1.763232 3.461556 3.451147 4.815810 4.484100 4.369366 4.307558 5.606415
+ [9] 6.744229 8.282779 7.715722
+table1 <- matrix(c(annualallocations[["Allocation"]]), nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
+table1
+         2010     2011     2012    2013   2014     2015     2016     2017
+NZUs 1.763232 3.461556 3.451147 4.81581 4.4841 4.369366 4.307558 5.606415
+         2018     2019     2020
+NZUs 6.744229 8.282779 7.715722 
+
+# chart of industrial allocation of emission units
+svg(filename ="Industrial-Allocation-barplot-2010-2020-720-540.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
+
+png("Industrial-Allocation-barplot-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+par(mar=c(4, 4, 4, 1)+0.1)
+barplot(table1,ylim=c(0,9),las=1,space=c(0.1,1.1), beside = TRUE, col=c("#7570b3")) 
+title(cex.main=1.4,main="Emission units allocated to industry 2010 to 2020",ylab="emission units (millions)")
+mtext(side=1,line=2.5,cex=1,expression(paste("Source: EPA Industrial allocation decisions")))
+mtext(side=3,line=0,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
+#legend("topleft", inset=c(0.0,0.0) ,bty="n",c("Free Allocation of NZUs","Actual Industry Emissions"),fill=c("brown3","#ED731D"))
+dev.off() 
+
+
+# How many Applicants are receiving free emission units? 162
+
+Applicants <- aggregate(Allocation ~ Name, Allocations, sum)
+str(Applicants)
+'data.frame':	162 obs. of  2 variables:
+ $ Name : chr  "ACI OPERATIONS NZ LIMITED" "Affco New Zealand Limited" "Alliance Group Limited" "Alwyn Ernest Inger, Anne Marie Inger" 
+ $ Allocation: int  457184 84603 80841 2220 70102 34 1381 245 243792 60 
+
+# sort /order data by units allocated decreasing   https://www.statmethods.net/management/sorting.html
+attach(Applicants)
+Applicants <- Applicants[order(Allocation,decreasing=TRUE),]
+
+# create csv file of Applicants data
+write.table(Applicants, file = "Applicants.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
+
+# select the top two most generously allocated applicants - which will be NZ Steel and NZ Aluminium
+Applicantstoptwo <- head(Applicants,2)
+str(Applicantstoptwo) 
+'data.frame':	2 obs. of  2 variables:
+ $ Name      : chr  "New Zealand Steel Development Limited" "New Zealand Aluminium Smelters Limited"
+ $ Allocation: int  14070207 10407692
+# How many units allocated to top two applicants?
+sum(Applicantstoptwo[["Allocation"]])
+[1] 24477899 # 24.5 million  
+14070207 + 10407692
+[1] 24477899 
+
+# How many units allocated to all applicants? 
+sum(Applicants[["Allocation"]])
+[1] 55001914
+# what proportion of all 2010 to 2020 units were allocated to ten applicants?
+toptwoproportion <- sum(Applicantstoptwo[["Allocation"]]) /sum(Applicants[["Allocation"]]) 
+toptwoproportion 
+[1] 0.4450372 
+# or 
+24477899 /  55001914 
+[1] 0.4450372 
+
+# How many units were allocated to all 160 other applicants?
+others <- sum(Applicants[["Allocation"]]) - sum(Applicantstoptwo[["Allocation"]]) 
+others
+[1] 30524015
+55001914 - 24477899 
+[1] 30524015 
+
+toptwonames<-c("NZ Steel", "NZ Aluminium Smelters", "All 160 Others")
+toptwoallocation <-c(14070207, 10407692, 30524015)
+sum(toptwoallocation)
+[1] 55001914
+percent <- round(toptwoallocation/sum(toptwoallocation)*100)
+percent 
+[1] 26 19 55 
+
+palettepair11<-brewer.pal(3, "Paired")
+png("Steel-Aluminium-Other-allocations-pie-2010-2020-680.png", width=680, height=510, pointsize = 14)
+pie(toptwoallocation,labels=c(toptwonames),radius = 0.95,clockwise = FALSE,init.angle=260, col = palettepair11, cex.lab=1.1,cex.main=1.5,main="NZETS Industrial Allocation free allocation of emission units\nto the 'top two' applicants 2010 - 2020")
+mtext(side=1,cex=0.9,line=1.8,"Source: https://www.epa.govt.nz/industry-areas/\nemissions-trading-scheme/industrial-allocations/decisions/")
+mtext(side=1,cex=1,line=-0.1,"Of 55 million units allocated to industry, 24.5 million (45%) went to NZ Steel and NZ Aluminium")
+#labels <- paste(toptwonames, percent)
+dev.off()
+
+svg(filename ="Steel-Aluminium-Other-allocations-pie-2010-2020_720-540.svg", width = 8, height = 6, pointsize = 14, onefile = FALSE, family = "sans", bg = "white")
+pie(toptwoallocation,labels=c(toptwonames),radius = 0.95,clockwise = FALSE,init.angle=260, col = palettepair11, cex.lab=1.1,cex.main=1.4,main="NZETS Industrial Allocation free allocation\nof emission units to the 'top two' applicants 2010 - 2020")
+mtext(side=1,cex=0.9,line=1.8,"Source: https://www.epa.govt.nz/industry-areas/\nemissions-trading-scheme/industrial-allocations/decisions/")
+mtext(side=1,cex=1,line=-0.1,"Of 55 million units allocated to industry between 2010 and 2020\n24.5 million (45%) went to NZ Steel and NZ Aluminium")
+dev.off()
+
+
+
+# select the top ten most generously allocated applicants
+Applicantstopten <- head(Applicants[order(Allocation,decreasing=TRUE),],10)
+str(Applicantstopten)
+'data.frame':	10 obs. of  2 variables:
+ $ Name      : chr  "New Zealand Steel Development Limited" "New Zealand Aluminium Smelters Limited" "Methanex New Zealand Ltd" "Fletcher Concrete and Infrastructure Limited" ...
+ $ Allocation: num  14070207 10407692 7897573 4353470 3865433 ...  
+
+# How many units allocated to top ten applicants?
+sum(Applicantstopten[["Allocation"]])
+[1] 48988716 # 48.988716 million
+# How many units allocated to all applicants? 
+sum(Applicants[["Allocation"]])
+[1] 55001914
+# what proportion of all 2010 to 2020 units were allocated to ten applicants?
+toptenproportion <- sum(Applicantstopten[["Allocation"]]) /sum(Applicants[["Allocation"]]) 
+toptenproportion 
+[1] 0.8906729 
+# How many units allocated to all other applicants?
+sum(Applicants[["Allocation"]]) - sum(Applicantstopten[["Allocation"]]) 
+[1] 6013198 
+
+head(Applicants[order(Allocation,decreasing=TRUE),],10)
+                                            Name Allocation
+113        New Zealand Steel Development Limited   14070207
+111       New Zealand Aluminium Smelters Limited   10407692
+105                     Methanex New Zealand Ltd    7897573
+43  Fletcher Concrete and Infrastructure Limited    4353470
+116             Oji Fibre Solutions (NZ) Limited    3865433
+11      Ballance Agri-Nutrients (Kapuni) Limited    2306629
+114                       Norske Skog Tasman Ltd    1879433
+119              Pan Pac Forest Products Limited    1599929
+55                         Graymont (NZ) Limited    1385445
+161          Winstone Pulp International Limited    1222905
+
+# What percent of units went to top 10 emitters?
+
+top10names<-c("NZ Steel", "NZ Aluminium Smelters", "Methanex NZ", "Fletcher Concrete", "Oji Fibre", "Ballance Agri-Nutrients",  "Norske Skog Tasman","Pan Pac Forest Products", "Graymont", "Winstone Pulp","All Others")
+top10allocation <-c(14070207, 10407692,  7897573, 4353470,3865433,2306629, 1879433,1599929,1385445,1222905,6013198 )
+palettepair11<-brewer.pal(11, "Paired")
+
+png("nzu-allocations-pie-2010-2020-680.png", width=680, height=510, pointsize = 14)
+pie(top10allocation,labels=c(top10names),radius = 0.95,clockwise = FALSE,init.angle=260, col = palettepair11, cex.lab=1.1,cex.main=1.5,main="NZETS free allocation of emission units\nto the 'top ten' applicants 2010 - 2020")
+mtext(side=1,cex=0.9,line=1.8,"Source: https://www.epa.govt.nz/industry-areas/\nemissions-trading-scheme/industrial-allocations/decisions/")
+mtext(side=1,cex=1,line=-0.1,"Of 55 million units allocated to industry, 48 million (89%) went to 10 companies")
+dev.off() 
+ 
+ 
+ 
+ 
+dotchart(sort(Applicants[["Allocation"]][1:12]), main = "chart of units allocated to applicants",las=1)
+
+sort(Applicants[["Allocation"]])
+  [1]        2       10       10       15       18       18       24       24
+  [9]       31       34       34       43       45       47       48       58
+ [17]       60       68       85      100      116      121      122      123
+ [25]      132      136      150      155      160      168      168      188
+ [33]      190      195      198      201      203      222      226      227
+ [41]      229      230      235      236      245      246      286      310
+ [49]      311      323      365      394      425      454      471      501
+ [57]      643      657      703      713      767      775      845      953
+ [65]      970     1114     1194     1276     1381     1393     1436     1464
+ [73]     1715     1802     2189     2220     2283     2349     2484     2622
+ [81]     2853     3263     3559     3577     4121     4234     5203     5488
+ [89]     6134     6189     6853     7005     8656     8732     9367     9563
+ [97]    10198    10510    10554    11135    11297    11454    11903    11933
+[105]    12058    12586    12634    12931    13781    14273    14501    14829
+[113]    23144    23680    23982    24233    26280    30565    38358    38415
+[121]    39271    42531    43962    45900    46377    46508    46648    50394
+[129]    51498    57101    58014    64740    70102    71813    72947    80841
+[137]    83061    84603    86050    98805   107259   119717   131879   149860
+[145]   151084   202996   216779   242838   243792   457184  1072395  1112834
+[153]  1222905  1385445  1599929  1879433  2306629  3865433  4353470  7897573
+[161] 10407692 14070207
+ sort(Applicants[["Allocation"]],decreasing=TRUE)[1:10]
+ [1] 14070207 10407692  7897573  4353470  3865433  2306629  1879433  1599929
+ [9]  1385445  1222905 
+
+attach(mtcars)
+str(mtcars)
+'data.frame':	32 obs. of  11 variables:
+ $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+ $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+ $ disp: num  160 160 108 258 360 ...
+ $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+ $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+ $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+ $ qsec: num  16.5 17 18.6 19.4 17 ...
+ $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+ $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+ $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+ $ carb: num  4 4 1 1 2 1 4 2 2 4 ...  
+ newdata <- mtcars[order(mpg),] 
+head(newdata)
+                     mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Cadillac Fleetwood  10.4   8  472 205 2.93 5.250 17.98  0  0    3    4
+Lincoln Continental 10.4   8  460 215 3.00 5.424 17.82  0  0    3    4
+Camaro Z28          13.3   8  350 245 3.73 3.840 15.41  0  0    3    4
+Duster 360          14.3   8  360 245 3.21 3.570 15.84  0  0    3    4
+Chrysler Imperial   14.7   8  440 230 3.23 5.345 17.42  0  0    3    4
+Maserati Bora       15.0   8  301 335 3.54 3.570 14.60  0  1    5    8
+newerdata <- mtcars[order(mpg,decreasing=TRUE),]
+head(newerdata)
+                mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Toyota Corolla 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+Fiat 128       32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+Honda Civic    30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2
+Lotus Europa   30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2
+Fiat X1-9      27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+Porsche 914-2  26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2
+ 
+ 
+Allocations[Allocations$Name =="New Zealand Aluminium Smelters Limited",]
+
+
 
 # Base R separate allocation of emissions units data into years
 nzu2010 <- head(Allocations[Allocations$Year =="2010",]) 
@@ -80,6 +341,8 @@ nzu2017 <- filter(Allocations, Year =="2017")
 nzu2018 <- filter(Allocations, Year =="2018")
 nzu2019 <- filter(Allocations, Year =="2019") 
 nzu2020 <- filter(Allocations, Year =="2020") 
+sum(nzu2018[["Allocation"]])
+[1] 6744229
 
 # Each year, from May, the EPA makes a 'provisional' allocation of emssion units to selected industries. see https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/ I want to estimate the market value of free allocation of units. I understand that the deadline for a provisional allocation is 30 April of each year so I assume the transfer of allocation is made in May of each year. There is an online 'open data' Github repository of New Zealand Unit (NZU) prices going back to May 2010. https://github.com/theecanmole/nzu
 # The NZU repository has it's own citation and DOI: Theecanmole. (2016). New Zealand emission unit (NZU) monthly prices 2010 to 2016: V1.0.01 [Data set]. Zenodo. http://doi.org/10.5281/zenodo.221328
@@ -179,101 +442,12 @@ $ Name  <chr> "New Zealand Aluminium Smelters Limited", "Graymont (NZ) Li…
 $ Year       <int> 2010, 2010, 2010, 2010, 2010, 2010, 2010, 2010, 2010, 2010,…
 $ Allocation <int> 210421, 47144, 3653, 4712, 948, 93275, 16818, 34, 39164, 49…
 $ Value      <dbl> 3699201.18, 828791.52, 64219.74, 82836.96, 16665.84, 163977… 
-head(Allocations)
-            Activity                                Name Year Allocation
-1 Aluminium smelting   New Zealand Aluminium Smelters Limited 2010     210421
-2         Burnt lime                    Graymont (NZ) Limited 2010      47144
-3         Burnt lime             Holcim (New Zealand) Limited 2010       3653
-4         Burnt lime               Perry Resources (2008) Ltd 2010       4712
-5         Burnt lime   Websters Hydrated Lime Company Limited 2010        948
-6   Carbamide (urea) Ballance Agri-Nutrients (Kapuni) Limited 2010      93275 
+
 names(Allocations)
 [1] "Year"       "Activity"   "Name"       "Allocation" "Value"
 
-Allocations2 <- Allocations[,c("Year","Name","Allocation","Value")]  
- 
-str(Allocations2) 
-'data.frame':	1207 obs. of  4 variables:
- $ Year      : int  2010 2010 2010 2010 2010 2010 2010 2010 2010 2010 ...
- $ Name      : chr  "New Zealand Aluminium Smelters Limited" "Graymont (NZ) Limited" "Holcim (New Zealand) Limited" "Perry Resources (2008) Ltd" ...
- $ Allocation: int  210421 47144 3653 4712 948 93275 16818 34 39164 4958 ...
- $ Value     : num  3699201 828792 64220 82837 16666 ...   
-
-# Convert long to wide https://www.youtube.com/watch?v=TYUyXrwmPOM
-
-Allocationswide <- pivot_wider(data = Allocations,names_from ="Name",values_from="Allocation") 
-Warning message:
-Values from `Allocation` are not uniquely identified; output will contain list-cols.
-* Use `values_fn = list` to suppress this warning.
-* Use `values_fn = {summary_fun}` to summarise duplicates.
-* Use the following dplyr code to identify duplicates.
-  {data} %>%
-    dplyr::group_by(Year, Name) %>%
-    dplyr::summarise(n = dplyr::n(), .groups = "drop") %>%
-    dplyr::filter(n > 1L) 
-
-names(Allocationswide)
-  [1] "Year"                                                                               
-  [2] "New Zealand Aluminium Smelters Limited"                                             
-  [3] "Graymont (NZ) Limited"                                                              
-  [4] "Holcim (New Zealand) Limited"                                                       
-  [5] "Perry Resources (2008) Ltd"    
- head(Allocationswide,1)
-# A tibble: 1 × 163
-   Year `New Zealand Alumin…` `Graymont (NZ)…` `Holcim (New Z…` `Perry Resourc…`
-  <int> <list>                <list>           <list>           <list>          
-1  2010 <int [1]>             <int [1]>        <int [2]>        <int [1]>       
-# … with 158 more variables: `Websters Hydrated Lime Company Limited` <list>,
-#   `Ballance Agri-Nutrients (Kapuni) Limited` <list>, 
-
-  
-Allocation %>% pivot_wider(names_from ="Name",values_from="Allocation")
-
-head(Allocations %>% pivot_wider(names_from ="Name",values_from="Allocation"))
-# A tibble: 6 × 164
-   Year Activity              `New Zealand A…` `Graymont (NZ)…` `Holcim (New Z…`
-  <int> <chr>                            <int>            <int>            <int>
-1  2010 Aluminium smelting              210421               NA               NA
-2  2010 Burnt lime                          NA            47144             3653
-3  2010 Carbamide (urea)                    NA               NA               NA
-4  2010 Carbon steel from co…               NA               NA               NA
-5  2010 Cartonboard                         NA               NA               NA
-6  2010 Caustic soda                        NA               NA               NA
-# … with 159 more variables: `Perry Resources (2008) Ltd` <int>, 
-
-head(pivot_wider(Allocations,id_cols=c("Year","Name","Allocation"), names_from ="Name",values_from="Allocation"))
-head(pivot_wider(Allocations, names_from ="Name",values_from="Allocation"))
-# A tibble: 6 × 164
-   Year Activity              `New Zealand A…` `Graymont (NZ)…` `Holcim (New Z…`
-  <int> <chr>                            <int>            <int>            <int>
-1  2010 Aluminium smelting              210421               NA               NA
-2  2010 Burnt lime                          NA            47144             3653 
-head(pivot_wider(Allocations, id_cols=c(1,3,4), names_from ="Name",values_from="Allocation",names_sort=TRUE))
-# create new dataframe that is allocations by applicant
-Namesallocations <-pivot_wider(Allocations,id_cols=NULL, names_from ="Name",values_from="Allocation")
-dim(Namesallocations)
-[1] 275 164 
-head(Namesallocations)
-# A tibble: 6 × 164
-   Year Activity              `New Zealand A…` `Graymont (NZ)…` `Holcim (New Z…`
-  <int> <chr>                            <int>            <int>            <int>
-1  2010 Aluminium smelting              210421               NA               NA
-2  2010 Burnt lime                          NA            47144             3653
-3  2010 Carbamide (urea)                    NA               NA               NA
-4  2010 Carbon steel from co…               NA               NA               NA
-5  2010 Cartonboard                         NA               NA               NA 
-head(Namesallocations[,-2])
-# A tibble: 6 × 163
-   Year `New Zealand Alumin…` `Graymont (NZ)…` `Holcim (New Z…` `Perry Resourc…`
-  <int>                 <int>            <int>            <int>            <int>
-1  2010                210421               NA               NA               NA
-2  2010                    NA            47144             3653             4712
-3  2010                    NA               NA               NA               NA
-4  2010                    NA               NA               NA               NA 
-# Create .csv formatted data file
-write.csv(Namesallocations, file = "Namesallocations.csv", row.names = FALSE) 
-
 # How many activities receive free units and how many units for each industrial Activity? 26 activities
+
 Activities <- aggregate(Allocation ~ Activity, Allocations, sum)
 str(Activities)
 'data.frame':	26 obs. of  2 variables:
@@ -298,48 +472,73 @@ head((Activities))
 5                         Cartonboard    1112834
 6                        Caustic soda     120302 
 
+# sort /order data by units allocated decreasing 
+https://www.statmethods.net/management/sorting.html
 
-# How many Applicants are receiving free emission units? 162
-Applicants <- aggregate(Allocation ~ Name, Allocations, sum)
-str(Applicants)
-'data.frame':	162 obs. of  2 variables:
- $ Name : chr  "ACI OPERATIONS NZ LIMITED" "Affco New Zealand Limited" "Alliance Group Limited" "Alwyn Ernest Inger, Anne Marie Inger" 
- $ Allocation: int  457184 84603 80841 2220 70102 34 1381 245 243792 60 ...
+attach(Activities)
+# order by largest to smallest
+Activities <- Activities[order(Allocation,decreasing=TRUE),]
+# create csv file of data
+write.table(Activities, file = "Activities.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
+
+# print
+Activities
+                                      Activity Allocation
+17 Iron and steel manufacturing from iron sand   14166823
+1                           Aluminium smelting   10407692
+20                                    Methanol    7897573
+7                        Cementitious products    5383349
+19                                 Market pulp    4808292
+3                             Carbamide (urea)    2306629
+21                                   Newsprint    1879433
+22              Packaging and industrial paper    1853810
+2                                   Burnt lime    1493104
+5                                  Cartonboard    1112834
+23                                Protein meal     739299
+24                   Reconstituted wood panels     534139
+15                            Glass containers     457184
+18                                     Lactose     362644
+13                              Fresh tomatoes     324290
+25                                Tissue paper     243792
+4          Carbon steel from cold ferrous feed     240048
+11                             Fresh capsicums     205042
+16                           Hydrogen peroxide     151084
+12                             Fresh cucumbers     129166
+6                                 Caustic soda     120302
+10                                     Ethanol      80300
+9                                    Cut roses      38342
+26                                 Whey powder      30054
+14                                    Gelatine      23144
+8                  Clay bricks and field tiles      13545
+
+Activitiestopten <- head(Activities,10)
+head(Activities,10)
+Activitiestopten
+data.frame:	10 obs. of  2 variables:
+ $ Activity  : chr  "Carbon steel from cold ferrous feed" "Iron and steel manufacturing from iron sand" "Fresh cucumbers" "Newsprint" ...
+ $ Allocation: int  240048 14166823 129166 1879433 151084 7897573 120302 80300 10407692 4808292 
+Activitiestopten 
+
 
 # How many emissions units have been given away from 2010 to 2020?
 sum(Allocations[["Allocation"]])
 [1] 55001914 
 # 55 million
 
+
 top10names<-c("NZ Steel", "NZ Aluminium Smelters", "Methanex NZ", "Fletcher Concrete", "Oji Fibre", "Ballance Agri-Nutrients", "Pan Pac Forest Products", "Norske Skog Tasman", "Winstone Pulp", "Graymont","Others")
 top10allocation <-c(1782366, 1324556,  945210,  584032,  484322,  325594,  210652,  200556,  151546, 144405,590334 )
 palettepair11<-brewer.pal(11, "Paired")
-png("nzu-allocations-pie-2018-565.png", width=565, height=424, pointsize = 14)
-pie(top10allocation,labels=c(top10names),radius = 0.99,clockwise = FALSE,init.angle=260, col = palettepair11, cex.lab=1.1,cex.main=1.5,main="NZETS free allocation of emission units\nto the Top Ten Emitters 2018")
+
+png("nzu-allocations-pie-2020-565.png", width=565, height=424, pointsize = 14)
+pie(top10allocation,labels=c(top10names),radius = 0.99,clockwise = FALSE,init.angle=260, col = palettepair11, cex.lab=1.1,cex.main=1.5,main="NZETS free allocation of emission units\nto the Top Ten Emitters 2010 to 2020")
 mtext(side=1,cex=0.9,line=2.6,"Source: https://www.epa.govt.nz/industry-areas/\nemissions-trading-scheme/industrial-allocations/decisions/")
 mtext(side=1,cex=1,line=0.4,"Of 6.7 million units allocated to industry, 6.2 million (91%) went to 10 companies")
 dev.off() 
+# How many units were allocated to the top ten applicants?
+sum(top10allocation)
 
-# How many emission units were allocated for each year
 
-annualallocations <- aggregate(Allocations[["Allocation"]] ~ Year, Allocations, sum)
-
-# check the data frame
-str(annualallocations) 
-'data.frame':	11 obs. of  2 variables:
- $ Year                       : num  2010 2011 2012 2013 2014 ...
- $ Allocations[["Allocation"]]: num  1763232 3461556 3451147 4815810 4484100
-
-# rename column variables
-colnames(annualallocations) <- c("Year", "Allocation") 
-
-# restate to 10^6 (millions) 
-annualallocations["Allocation"] <- annualallocations[["Allocation"]]/10^6
-
-str(annualallocations) 
-'data.frame':	11 obs. of  2 variables:
- $ Year      : num  2010 2011 2012 2013 2014 ...
- $ Allocation: num  1.76 3.46 3.45 4.82 4.48 ...
 
 annualallocations
    Year Allocation
@@ -470,14 +669,21 @@ svg(filename ="annualallocations_720-540.svg", width = 8, height = 6, pointsize 
 
 png("Industry-Emissions-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4, 4, 4, 1)+0.1)
-barplot(table1,las=1,space=c(0.1,1.1), beside = TRUE, col=c("brown3")) 
+barplot(table1,ylim=c(0,5.5),las=1,space=c(0.1,1.1), beside = TRUE, col=c("brown3")) 
 title(cex.main=1.4,main="Industry Sector Emissions 2010 2020",ylab="tonnes GHG CO2-e (millions)")
 mtext(side=1,line=2.5,cex=1,expression(paste("Source: MfE GHG Inventory 2020")))
 mtext(side=3,line=0,cex=1,expression(paste("Emissions from the Industrial sector were 53 million tonnes from 2010 to 2020")))
 #legend("topleft", inset=c(0.0,0.0) ,bty="n",c("Free Allocation of NZUs","Actual Industry Emissions"),fill=c("brown3","#ED731D"))
 dev.off() 
 
-plot(annualallocations,type='l')  
+str(annualallocations)
+'data.frame':	11 obs. of  2 variables:
+ $ Year      : num  2010 2011 2012 2013 2014 ...
+ $ Allocation: num  1763232 3461556 3451147 4815810 4484100 ..
+max(annualallocations[["Allocation"]]) 
+[1] 8282779 
+
+plot(annualallocations$Year,annualallocations[["Allocation"]],type='l',ylim=c(0,8*10^6),las=1, col=c("brown3"))
 
 sum(annualallocations[["Allocation"]]) 
 1] 55.00191 
@@ -486,10 +692,11 @@ annualallocations[["Allocation"]]
 # create table of emission units allocated to industry 
 table2 <- matrix(c( 1.763232, 3.461556, 3.451147, 4.815810, 4.484100, 4.369366, 4.307558, 5.606415, 6.744229, 8.282779, 7.715722),nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),
 c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
+
 # create barplot of allocated units
 png("Industry-Allocation-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4, 4, 4, 1)+0.1)
-barplot(table2,las=1,space=c(0.1,1.1), beside = TRUE, col=c("brown3")) 
+barplot(table1,las=1,space=c(0.1,1.1), beside = TRUE, col=c("brown3")) 
 title(cex.main=1.4,main="Emission Units allocated to Industry 2010 2020",ylab="Units/tonnes GHG CO2-e (millions)")
 mtext(side=1,line=2.5,cex=1,expression(paste("Source: EPA Industrial allocation decisions")))
 mtext(side=3,line=0,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
@@ -798,3 +1005,12 @@ str(applicantsum)
  # Create .csv formatted data file
 write.csv(activitysum, file = "nzu-allocation-activities.csv", row.names = FALSE)
 write.csv(applicantsum, file = "nzu-allocation-applicants.csv", row.names = FALSE)
+
+brewer.pal(2, "Paired")
+[1] "#A6CEE3" "#1F78B4" "#B2DF8A"
+Warning message:
+In brewer.pal(2, "Paired") :
+  minimal value for n is 3, returning requested palette with 3 different levels
+
+  
+  glasshouse[order(glasshouse$Allocation),]
