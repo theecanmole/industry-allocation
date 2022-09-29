@@ -91,7 +91,7 @@ str(annualallocations)
  $ Allocation: num  1.76 3.46 3.45 4.82 4.48 ... 
 
 svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
-png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+#png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(2.7,2.7,1,1)+0.1)
 plot(annualallocations[["Year"]],annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
 axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
@@ -113,7 +113,7 @@ points(annualallocations[["Year"]],annualallocations[["Allocation"]],col="#7570b
 mtext(side=1,line=-1.5,cex=1,"Source: EPA industrial allocation decisions")
 mtext(side=3,cex=1.5, line=-2.2,expression(paste("Emission units allocated to industry 2010 to 2020")) )
 mtext(side=2,cex=1, line=-1.5,expression(paste("million units")))
-mtext(side=3,line=-3.5,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
+mtext(side=3,line=-3.5,cex=1,expression(paste("From 2010 to 2020 some 55 million free emission units were given to emissions intensive industries")))
 mtext(side=4,cex=0.75, line=0.05,R.version.string)
 dev.off()
 

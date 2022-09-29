@@ -4,6 +4,9 @@
 
 the Emissions Trading Scheme [Industrial Allocation](https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/)
 
+
+![](Industrial-Allocation-barplot-2010-2020-720-540.svg)
+
 ![](NZsteel-Allocation-GHGs-line-2010-2020-720by540v1.svg) 
 
 
