@@ -90,6 +90,30 @@ str(annualallocations)
  $ Year      : num  2010 2011 2012 2013 2014 ...
  $ Allocation: num  1.76 3.46 3.45 4.82 4.48 ... 
 
+# create table that is industrial allocation of emission units
+annualallocations[["Allocation"]] 
+[1] 1.763232 3.461556 3.451147 4.815810 4.484100 4.369366 4.307558 5.606415
+ [9] 6.744229 8.282779 7.715722
+table1 <- matrix(c(annualallocations[["Allocation"]]), nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
+table1
+         2010     2011     2012    2013   2014     2015     2016     2017
+NZUs 1.763232 3.461556 3.451147 4.81581 4.4841 4.369366 4.307558 5.606415
+         2018     2019     2020
+NZUs 6.744229 8.282779 7.715722 
+
+# chart of industrial allocation of emission units
+svg(filename ="Industrial-Allocation-barplot-2010-2020-720-540.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
+#png("Industrial-Allocation-barplot-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+par(mar=c(4, 4, 4, 1)+0.1)
+barplot(table1,ylim=c(0,9),las=1,space=c(0.1,1.1), beside = TRUE, col=c("#7570b3")) 
+title(cex.main=1.4,main="Emission units allocated to industry 2010 to 2020",ylab="emission units (millions)")
+mtext(side=1,line=2.5,cex=1,expression(paste("Source: EPA Industrial allocation decisions")))
+mtext(side=3,line=0,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
+#legend("topleft", inset=c(0.0,0.0) ,bty="n",c("Free Allocation of NZUs","Actual Industry Emissions"),fill=c("brown3","#ED731D"))
+dev.off() 
+
+ 
+ 
 svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
 #png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(2.7,2.7,1,1)+0.1)
@@ -117,28 +141,7 @@ mtext(side=3,line=-3.5,cex=1,expression(paste("From 2010 to 2020 some 55 million
 mtext(side=4,cex=0.75, line=0.05,R.version.string)
 dev.off()
 
-# create table that is industrial allocation of emission units
-annualallocations[["Allocation"]] 
-[1] 1.763232 3.461556 3.451147 4.815810 4.484100 4.369366 4.307558 5.606415
- [9] 6.744229 8.282779 7.715722
-table1 <- matrix(c(annualallocations[["Allocation"]]), nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
-table1
-         2010     2011     2012    2013   2014     2015     2016     2017
-NZUs 1.763232 3.461556 3.451147 4.81581 4.4841 4.369366 4.307558 5.606415
-         2018     2019     2020
-NZUs 6.744229 8.282779 7.715722 
-
-# chart of industrial allocation of emission units
-svg(filename ="Industrial-Allocation-barplot-2010-2020-720-540.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
-
-png("Industrial-Allocation-barplot-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
-par(mar=c(4, 4, 4, 1)+0.1)
-barplot(table1,ylim=c(0,9),las=1,space=c(0.1,1.1), beside = TRUE, col=c("#7570b3")) 
-title(cex.main=1.4,main="Emission units allocated to industry 2010 to 2020",ylab="emission units (millions)")
-mtext(side=1,line=2.5,cex=1,expression(paste("Source: EPA Industrial allocation decisions")))
-mtext(side=3,line=0,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
-#legend("topleft", inset=c(0.0,0.0) ,bty="n",c("Free Allocation of NZUs","Actual Industry Emissions"),fill=c("brown3","#ED731D"))
-dev.off() 
+ 
 
 
 # How many Applicants are receiving free emission units? 162
