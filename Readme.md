@@ -18,10 +18,5 @@ How many units? The answer is fifty five million or 55,001,914 emissions units h
 
 This bar plot shows the 55 million emissions units year by year.
 
-![](Industrial-Allocation-barplot-2010-2020-720-540.svg)
+![](Industrial-Allocation-barplot-2010-2020-720-540v1.svg)
 
-![](NZsteel-Allocation-GHGs-line-2010-2020-720by540v1.svg) 
-
-![](Industry-Emissions-2010-2020-560by420-v1.png)
-
-![](Industrial-Allocation-line-2010-2020-720-540-v1.svg)

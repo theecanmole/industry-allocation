@@ -92,8 +92,9 @@ brewer.pal("Dark2",n=3)
 brewer.pal("Dark2",n=4)
 [1] "#1B9E77" "#D95F02" "#7570B3" "#E7298A" # teal khaki mauve shocking pink 
 # colour chosen for bars - blue blue/mauve "#7570b3")
+
 # create barplot chart of industrial allocation of emission units
-svg(filename ="Industrial-Allocation-barplot-2010-2020-720-540.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
+svg(filename ="Industrial-Allocation-barplot-2010-2020-720-540v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
 #png("Industrial-Allocation-barplot-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4, 4, 4, 1)+0.1)
 barplot(table1,ylim=c(0,9),las=1,space=c(0.1,1.1), beside = TRUE, col=c("#7570b3"))  
