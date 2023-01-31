@@ -38,7 +38,7 @@ So it's the same net result as if the industry sector was completely exempted fr
 
 However I am missing a step in my analysis. In my detailed examples for New Zealand Steel and New Zealand Aluminium Smelters, I estimated the actual liability to surrender units by multiplying the Greenhouse Gas Inventory steel and aluminium emissions by a variable representing the "two for one" discount introduced in 2009 by the Hon Dr Nick Smith when he was the Minister for Climate Changes Issues.
 
-On 1 September 2009 with Dr Smith's approval "Emissions trading bulletin No 11: Summary of the proposed changes to the NZ ETS" was published. It stated that the emissions trading scheme would be amended by adding a transition phase lasting to 31 December 2012 which would feature a "progressive obligation".
+On 1 September 2009 with Dr Smith's approval ["Emissions trading bulletin No 11: Summary of the proposed changes to the NZ ETS"](https://environment.govt.nz/publications/emissions-trading-bulletin-no-11-summary-of-the-proposed-changes-to-the-nz-ets/summary/) was published. It stated that the emissions trading scheme would be amended by adding a transition phase lasting to 31 December 2012 which would feature a "progressive obligation".
 
 ![](E-Bull-11-Screenshot_2022-12-14_16-24-45.png)
 
