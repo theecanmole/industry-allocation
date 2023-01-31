@@ -76,6 +76,7 @@ str(Annualallocations)
 Annualallocations[["Allocation"]] 
 [1] 1.763232 3.461556 3.451147 4.815810 4.484100 4.369366 4.307558 5.606415
  [9] 6.744229 8.282779 7.715722
+ 
 table1 <- matrix(c(Annualallocations[["Allocation"]]), nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
 table1
          2010     2011     2012    2013   2014     2015     2016     2017
