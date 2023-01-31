@@ -903,9 +903,8 @@ nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),
 c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
 
 # chart of just industry emissions
-svg(filename ="Annualallocations_720-540.svg", width = 8, height = 6, pointsize = 14, onefile = FALSE, family = "sans", bg = "white")
-
-png("Industry-Emissions-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+svg(filename ="Industry-Emissions-barplot-2010-2020-720-540.svg", width = 8, height = 6, pointsize = 14, onefile = FALSE, family = "sans", bg = "white")
+#png("Industry-Emissions-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4, 4, 4, 1)+0.1)
 barplot(table1,ylim=c(0,5.5),las=1,space=c(0.1,1.1), beside = TRUE, col=c("brown")) 
 title(cex.main=1.4,main="Industry Sector Emissions 2010 2020",ylab="tonnes GHG CO2-e (millions)")
