@@ -38,7 +38,7 @@ Then in 2012, Minister for Climate Change Issues Tim Groser introduced the [Clim
 
 Finally, in 2016, Minister for Climate Change Issues Paula Bennett introduced a bill to "phase out" the 'progressive obligation' over three years from 2017 to 2019 by increments from the original "two for one" - 2 units per tonne to 1.5 to 1.2 to 1 unit per tonne of emissions. See the ["EPA document ETS Surrender Obligations One for two phase out factsheet"](https://www.epa.govt.nz/assets/Uploads/Documents/Emissions-Trading-Scheme/Guidance/ETS-Surrender-Obligations-One-for-two-phase-out-factsheet.pdf)
 
-So I need to include a discount variable that is then multiplied by the free emission units allocated to result in the "emissions footprint" of the allocation of units. The discount variable is 0.25 for 2010 (half obligation for half a year),then 0.5 from 2011 to 2016, 0.67 in 2017 ,0.83 in 2018 and finally one for one for 2019 and 2020.
+So I need to include a discount variable that is then multiplied by the free emission units allocated to result in the "emissions footprint" of the allocation of units. The discount variable is 0.25 for 2010 (half obligation for half a year), then 0.5 from 2011 to 2016, 0.67 in 2017, 0.83 in 2018 and finally one for one for 2019 and 2020.
 
 This allows me to estimate of the [carbon footprint](https://www.britannica.com/science/carbon-footprint) or [emissions footprint](https://www.sciencedirect.com/topics/engineering/emission-footprint) of all the units given under Industrial Allocation. As in this chart.
 
