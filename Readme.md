@@ -62,7 +62,7 @@ In a net sense Industrial Allocation is worse as a policy to reduce industry emi
 
 How does it make any sense that the 55 million free emission units gifted to big emitters under Industry Allocation exceed the total emissions of the industry sector, 53 million tonnes, from 2010 to 2020?
 
-In a (recent post)[https://rwmjohnson.blogspot.com/2022/11/industrial-allocation-free-emissions.html] I noted that 55 million free emission units had been allocated to industries over the eleven years from 2010 to 2020. I presented a barplot of the 'Industrial Allocation' of free emissions units given to emitting industries by the Environmental Protection Authority under the New Zealand emissions trading scheme.
+In a [recent post](https://rwmjohnson.blogspot.com/2022/11/industrial-allocation-free-emissions.html) I noted that 55 million free emission units had been allocated to industries over the eleven years from 2010 to 2020. I presented a barplot of the 'Industrial Allocation' of free emissions units given to emitting industries by the Environmental Protection Authority under the New Zealand emissions trading scheme.
 
 ![](Industrial-Allocation-barplot-2010-2020-720-540v1.svg)
 
