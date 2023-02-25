@@ -70,7 +70,7 @@ I left open the question "is 55 million free emission units (over eleven years) 
 
 The Ministry for the Environment doesn't seem to think so. Their website page on Industrial Allocation states the following;
 
-![](Industrial allocation contributes to unit supply in the NZ ETS-Screenshot_2022-12-03_18-02-03.png)
+![](IndustrialallocationcontributestounitsupplyinNZETS-Screenshot_2022-12-03_18-02-03.png)
 
 I call this the consultants fallacy. It has the form "put small number next to big number" and therefore "effects are minor" and grant me my resource consent.
 
