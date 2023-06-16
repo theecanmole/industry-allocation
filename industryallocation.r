@@ -245,36 +245,38 @@ dev.off()
 --------------------------------------------------------------
  
 # line chart of emissions units allocated to industry 
-svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
-#png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+#svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
+png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=570, height=420,pointsize = 12)
 par(mar=c(2.7,2.7,1,1)+0.1)
-plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
-axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
+plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2021),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2021), labels = c(2010:2021), tick = TRUE)
 axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:8), labels = c(0:8),tick = TRUE)
 axis(side=4, tck=0.01, at = c(0:8), labels = FALSE, tick = TRUE)
 box(lwd=1)
 lines(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",lwd=1,lty=1) # shocking pink
 points(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",pch=19)
-mtext(side=1,line=-1.5,cex=1,"Source: EPA industrial allocation decisions")
-mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial Allocation emission units allocated to industry 2010 to 2020")) )
+mtext(side=1,line=-1.5,cex=1,"Source: EPA industrial allocation decisions \nhttps://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/")
+mtext(side=3,cex=1.4, line=-2.2,expression(paste("Industrial Allocation emission units allocated to industry 2010 to 2021")) )
 mtext(side=2,cex=1, line=-1.5,expression(paste("million units")))
-mtext(side=3,line=-3.5,cex=1,expression(paste("From 2010 to 2020 55 million free emission units were given to industries")))
+mtext(side=3,line=-3.5,cex=1,expression(paste("From 2010 to 2021 62 million free emission units were given to industries")))
 mtext(side=4,cex=0.75, line=0.05,R.version.string)
 dev.off()
 
 
-# check last 11 years of Industry emissions from inventory 2010 2020
-crfsummarydatasector[["Industry"]][21:31]
-[1] 4591.133 4627.387 4703.190 4836.346 5006.981 5137.323 4883.073 4928.440
-[9] 4825.074 4861.046 4618.354  
-# create vector that is industry emissions 11 years to 2020 restated in million tonnes 
-Annualallocations[["IndustryGHG"]] <- crfsummarydatasector[["Industry"]][21:31]/10^3
+# check last 11 years of Industry emissions from inventory 2010 2021
+crfsummarydatasector[["Industry"]][21:32]
+ [1] 4563.288 4595.215 4623.528 4723.671 4917.184 5032.140 4767.762 4799.334
+ [9] 4721.644 4775.112 4582.867 4609.616 
+
+# create vector that is industry emissions 12 years to 2021 restated in million tonnes 
+Annualallocations[["IndustryGHG"]] <- crfsummarydatasector[["Industry"]][21:32]/10^3
 Annualallocations[["IndustryGHG"]]
-[1] 4.591133 4.627387 4.703190 4.836346 5.006981 5.137323 4.883073 4.928440
- [9] 4.825074 4.861046 4.618354
-# what were actual emissions from 2009 to 2020? 53 million tonnes
+ [1] 4.563288 4.595215 4.623528 4.723671 4.917184 5.032140 4.767762 4.799334
+ [9] 4.721644 4.775112 4.582867 4.609616 
+
+# what were actual emissions from 2009 to 2021? 62 million tonnes
 sum(Annualallocations[["IndustryGHG"]])
-[1] 53.01835 
+[1] 56.71136  
 
 # create vector that is the '1 for 2' discount given for surrendering units emissions; 1 NZU for 2 tonnes GHG
 # create variable that is the 'two-for-one' discount - 2 tonnes = 1 unit to surrender  add unit discount variable to the data frame
@@ -283,95 +285,96 @@ https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/participating-in
 # "Phase out of the '1 for 2' surrender obligation, Prior to 2017, non-forestry participants had to surrender one eligible unit for every two tonnes of emissions they reported in their Annual emissions return, effectively a 50% surrender obligation. 2017 - 1 unit for each 1.5 whole tonnes of emissions 2018 - 1 unit for each 1.2 whole tonnes of emissions 2019 - 1 unit for each 1 whole tonne of emissions"
 # 2010 was a half year for ETS so the 'discount' for calculating emissions liability under the ETS is .5 x .5 = 0.25
 
-Annualallocations[["unitdiscount"]] <- c(0.25,0.5,0.5,0.5,0.5,0.5,0.5,0.67,0.83,1,1)
+Annualallocations[["unitdiscount"]] <- c(0.25,0.5,0.5,0.5,0.5,0.5,0.5,0.67,0.83,1,1,1)
 
 # create variable that is the emissions permitted by each years allocation of free units in mts i.e. 2 tonnes for 1 NZU
 Annualallocations[["AllocatedGHG"]] <- Annualallocations[["Allocation"]]/Annualallocations[["unitdiscount"]]
 
 str(Annualallocations)
-'data.frame':	11 obs. of  5 variables:
+'data.frame':	12 obs. of  5 variables:
  $ Year        : num  2010 2011 2012 2013 2014 ...
  $ Allocation  : num  1.76 3.46 3.45 4.82 4.48 ...
+ $ IndustryGHG : num  4.56 4.6 4.62 4.72 4.92 ...
  $ unitdiscount: num  0.25 0.5 0.5 0.5 0.5 0.5 0.5 0.67 0.83 1 ...
- $ IndustryGHG : num  4.59 4.63 4.7 4.84 5.01 ...
- $ AllocatedGHG: num  7.05 6.92 6.9 9.63 8.97 ...
+ $ AllocatedGHG: num  7.05 6.92 6.9 9.63 8.97 .. 
+
 # make csv file of allocations data
 write.table(Annualallocations, file = "Annualallocations.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
 # read in csv file
 Annualallocations<-read.csv("Annualallocations.csv") 
-Annualallocations[["Allocation"]] 
-[1] 1.763232 3.461556 3.451147 4.815810 4.484100 4.369366 4.307558 5.606415 6.744229 8.282779 7.715722
+# How many units allocated?
 sum(Annualallocations[["Allocation"]]) 
-[1] 55.00191 
+[1] 61.59497 
 # What are the Industry sector emissions ?
 Annualallocations[["IndustryGHG"]]
-[1] 4.591133 4.627387 4.703190 4.836346 5.006981 5.137323 4.883073 4.928440 4.825074 4.861046 4.618354 
-What is the sum of emissions from Industry for the 11 years ?
+ 
+#What is the sum of emissions from Industry for the 11 years ?
 sum(Annualallocations[["IndustryGHG"]])
-[1] 53.01835 
-# check the actual emissions permitted by the free units after factoring in the two for one discount 
+[1] 56.71136 
+# check the actual emissions (footprint) permitted by the free units after factoring in the two for one discount 
 Annualallocations[["AllocatedGHG"]]
- [1] 7.052928 6.923112 6.902294 9.631620 8.968200 8.738732 8.615116 8.367784 8.125577 8.282779 7.715722
+[1] 7.052928 6.923112 6.902294 9.631620 8.968200 8.738732 8.615116 8.367784
+ [9] 8.125577 8.282779 7.715722 6.593058
 
 # What is the emissions footprint of industrial allocation? How many tonnnes of emissions were permitted by the allocations to industry? 89 million
 sum(Annualallocations[["AllocatedGHG"]]) 
-[1] 89.32386 
+[1] 95.91692  
  
 # plot 1 line chart of units allocated to industry 
 svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
-#png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4.7,2.7,1,1)+0.1)
-plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
-axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
+plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2021),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2021), labels = c(2010:2021), tick = TRUE)
 axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:10), labels = c(0:10),tick = TRUE)
 axis(side=4, tck=0.01, at = c(0:10), labels = FALSE, tick = TRUE)
 box(lwd=1)
 lines(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",lwd=1,lty=1)                    #cerise/pink
 points(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",pch=17)                        
-mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2020, April 2022, ME 1635")
-mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2020")) )
+mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2021 April 2023 ME 1750")
+mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2021")) )
 mtext(side=2,cex=1, line=1.8,expression(paste("million units/tonnes")))
-mtext(side=3,line=-4,cex=1.2,expression(paste("From 2010 to 2020 53 million emission units were given to industry")))
+mtext(side=3,line=-4,cex=1.2,expression(paste("From 2010 to 2021 62 million emission units were given to industry")))
 mtext(side=4,cex=0.75, line=0.05,R.version.string)
 dev.off()
 
 sum(Annualallocations[["IndustryGHG"]])
-[1] 53.01835
+[1] 56.71136
 # plot 2 line chart of industry emissions and units allocated to industry 
-svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v2.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
+#svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v2.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
 png("Industrial-Allocation-line-2010-2020-560by420-v2.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4.7,2.7,1,1)+0.1) 
-plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
-axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
+plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2021),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2021), labels = c(2010:2021), tick = TRUE)
 axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:10), labels = c(0:10),tick = TRUE)
 axis(side=4, tck=0.01, at = c(0:10), labels = FALSE, tick = TRUE)
 box(lwd=1)
-legend("bottom", inset=c(0.0,0.0) ,bty="n",cex=1.2,c("Actual industry emissions 53 million tonnes","Industrial allocation of units 55 million units"),col=c("#d95f02","#E7298A"),lwd=1, pch=c(16,17))
+legend("bottom", inset=c(0.0,0.0) ,bty="n",cex=1.2,c("Actual industry emissions 57 million tonnes","Industrial allocation of units 62 million units"),col=c("#d95f02","#E7298A"),lwd=1, pch=c(16,17))
 lines(Annualallocations[["Year"]],Annualallocations[["IndustryGHG"]],col="#d95f02",lwd=1)
 points(Annualallocations[["Year"]],Annualallocations[["IndustryGHG"]],col="#d95f02",cex=1,pch=16)
 lines(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",lwd=1,lty=1)                 
 points(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",pch=17)                       
-mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2020, April 2022, ME 1635")
-mtext(side=3,cex=1.6, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2020")) )
+mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2021 April 2023 ME 1750")
+mtext(side=3,cex=1.6, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2021")) )
 mtext(side=2,cex=1.1, line=1.8,expression(paste("million units/tonnes")) )
 mtext(side=4,cex=1, line=0.05,R.version.string)
 dev.off()
 
 # plot 3 line chart of emissions footprint of industrial allocation ( not industry emissions and units allocated to industry )
-svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v3.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
-#png("Industrial-Allocation-line-2010-2020-560by420-v3.png", bg="white", width=560, height=420,pointsize = 12)
+#svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v3.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
+png("Industrial-Allocation-line-2010-2020-560by420-v3.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4.7,2.7,1,1)+0.1) # 
-plot(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]], xlim=c(2010,2020),ylim=c(4,11),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
-axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
+plot(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]], xlim=c(2010,2021),ylim=c(4,11),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2021), labels = c(2010:2021), tick = TRUE)
 axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:10), labels = c(0:10),tick = TRUE)
 axis(side=4, tck=0.01, at = c(0:10), labels = FALSE, tick = TRUE)
 box(lwd=1)
 lines(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]],col="#1b9e77",lwd=1)      # Mountain Meadow
 points(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]],col="#1b9e77",cex=1,pch=15)
-mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2020, April 2022, ME 1635")
-mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2020")) )
+mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2021 April 2023 ME 1750")
+mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2021")) )
 mtext(side=2,cex=1, line=1.8,expression(paste("million units/tonnes")))
-mtext(side=3,line=-4.5,cex=1,expression(paste("From 2010 to 2020 the emissions footprint of industry allocation was 89 millions tonnes")))
+mtext(side=3,line=-4.5,cex=1,expression(paste("From 2010 to 2021 the emissions footprint of industry allocation was 96 million tonnes")))
 mtext(side=4,cex=0.75, line=0.05,R.version.string)
 dev.off()
 
@@ -379,32 +382,35 @@ dev.off()
 svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v4.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
 #png("Industrial-Allocation-line-2010-2020-560by420-v4.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4.7,2.7,1,1)+0.1)  
-plot(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]], xlim=c(2010,2020),ylim=c(1.75,11.25),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
-axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
+plot(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]], xlim=c(2010,2021),ylim=c(1.75,11.25),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2021), labels = c(2010:2021), tick = TRUE)
 axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:10), labels = c(0:10),tick = TRUE)
 axis(side=4, tck=0.01, at = c(0:10), labels = FALSE, tick = TRUE)
 box(lwd=1)
-legend("bottomright", inset=c(0.0,0.0) ,bty="n",c("Emissions footprint of industrial allocation 89 million tonnes","Actual industry emissions 44 million tonnes","Industrial allocation of units 39 million units"),col=c("#1b9e77","#d95f02","#E7298A"),pch=c(15,16,17))
+legend("bottom", inset=c(0.0,0.0) ,bty="n",c("Emissions footprint of industrial allocation 96 million tonnes","Actual industry emissions 57 million tonnes","Industrial allocation of units 62 million units"),col=c("#1b9e77","#d95f02","#E7298A"),pch=c(15,16,17))
 lines(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]],col="#1b9e77",lwd=1)
 points(Annualallocations[["Year"]],Annualallocations[["AllocatedGHG"]],col="#1b9e77",cex=1.25,pch=15)
 lines(Annualallocations[["Year"]],Annualallocations[["IndustryGHG"]],col="#d95f02",lwd=1)               # Bamboo
 points(Annualallocations[["Year"]],Annualallocations[["IndustryGHG"]],col="#d95f02",cex=1,pch=16)
 lines(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",lwd=1,lty=1)                    #gray
 points(Annualallocations[["Year"]],Annualallocations[["Allocation"]],col="#E7298A",pch=17)                        #gray
-mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2020, April 2022, ME 1635")
-mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2020")) )
+mtext(side=1,line=3.3,cex=1,"Source: EPA industrial allocation decisions \nNew Zealands Greenhouse Gas Inventory 1990–2021 April 2023 ME 1750")
+mtext(side=3,cex=1.5, line=-2.2,expression(paste("Industrial allocation of units to industry 2010 to 2021")) )
 mtext(side=2,cex=1, line=1.8,expression(paste("million units/tonnes")))
-mtext(side=3,line=-4.5,cex=1,expression(paste("From 2010 to 2020 the emissions footprint of industrial allocation \nwas double the actual industry sector emissions")))
+mtext(side=3,line=-4.5,cex=1,expression(paste("From 2010 to 2021 the emissions footprint of industrial allocation \nwas nearly double the actual industry sector emissions")))
 mtext(side=4,cex=0.75, line=0.05,R.version.string)
 dev.off()
 
-# How many Applicants are receiving free emission units? 162
+
+# create dataframe of emitters (Applicants) units allocated
 Applicants <- aggregate(Allocation ~ Name, Allocations, sum)
 # check dataframe
 str(Applicants)
-'data.frame':	162 obs. of  2 variables:
- $ Name : chr  "ACI OPERATIONS NZ LIMITED" "Affco New Zealand Limited" "Alliance Group Limited" "Alwyn Ernest Inger, Anne Marie Inger" 
- $ Allocation: int  457184 84603 80841 2220 70102 34 1381 245 243792 60 
+'data.frame':	166 obs. of  2 variables:
+ $ Name      : chr  "ACI OPERATIONS NZ LIMITED" "Affco New Zealand Limited" "Alliance Group Limited" "Alwyn Ernest Inger, Anne Marie Inger" ...
+ $ Allocation: num  457184 97359 91519 2220 70102 ...
+ 
+# How many Applicants are receiving free emission units? 166
 
 # sort /order data by units allocated decreasing   https://www.statmethods.net/management/sorting.html
 attach(Applicants)
@@ -413,51 +419,50 @@ Applicants <- Applicants[order(Allocation,decreasing=TRUE),]
 
 # create csv file of Applicants data
 write.table(Applicants, file = "Applicants.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
+# read in Applicants units later
+# Applicants <- read.csv( file = "Applicants.csv")
 
-Applicants <- read.csv( file = "Applicants.csv")
-
-str(Applicants)
-'data.frame':	162 obs. of  2 variables:
- $ Name      : chr  "New Zealand Steel Development Limited" "New Zealand Aluminium Smelters Limited" "Methanex New Zealand Ltd" "Fletcher Concrete and Infrastructure Limited" ...
- $ Allocation: int  14070207 10407692 7897573 4353470 3865433 2306629 1879433 1599929 1385445 1222905 ... 
- 
 # Pie Charts of allocated units with Percentages
 
-slicestopten <- c(Applicants[["Allocation"]][1:10]/10^6)
-str(slicestopten) 
-[1] 14.070207 10.407692  7.897573  4.353470  3.865433  2.306629  1.879433
- [8]  1.599929  1.385445  1.222905 
-sum(slicestopten) 
-[1] 48.98872 
-sumslicestopten  <- sum(slicestopten)  
+slicestopfourteen <- c(Applicants[["Allocation"]][1:14]/10^6)
+str(slicestopfourteen) 
+num [1:14] 16.22 11.04 8.84 5.05 4.4 ...
+
+sum(slicestopfourteen) 
+[1] 58.01944
+sumslicestopfourteen  <- sum(slicestopfourteen)  
+sumslicestopfourteen
 
 total <-sum(Applicants[["Allocation"]]/10^6) 
 total 
-[1] 55.00191 
+[1] 61.59497
 
-therest <- total - sumslicestopten
+therest <- total - sumslicestopfourteen
 therest 
-[1] 6.013198 
+[1] 3.575535
 
-slices <-c(slicestopten, therest) 
+slices <-c(slicestopfourteen, therest) 
 slices 
-[1] 14.070207 10.407692  7.897573  4.353470  3.865433  2.306629  1.879433
- [8]  1.599929  1.385445  1.222905  6.013198
+[1] 16.215689 11.036253  8.841205  5.053458  4.403209  2.628483  1.959598
+ [8]  1.821769  1.544767  1.408423  1.276451  1.072395  0.457184  0.300553
+[15]  3.575535
 sum(slices)
-[1] 55.00191 
+[1] 61.59497 # OK
 
 total <-sum(Applicants[["Allocation"]]/10^6)
+total
+[1] 61.59497 
 
-# What percent of units went to the bottom 150 companies?
-therest / total
-6.013198 / 55.00191 * 100
-[1] 10.93271
-# What percent of units went to top ten industries
-sumslicestopten / total * 100 
-[1] 89.06729 
+# What percent of units went to the bottom 151 companies? (total = 166)
+therest / total * 100
+3.295607 / 61.59497 * 100
+[1] 5.804914 # % 
+# What percent of units went to top 15 industries
+sumslicestopfourteen / total * 100 
+[1] 94.19509
 
 # shorten label names
-Applicants[["Name"]][1:10]
+Applicants[["Name"]][1:15]
  [1] "New Zealand Steel Development Limited"       
  [2] "New Zealand Aluminium Smelters Limited"      
  [3] "Methanex New Zealand Ltd"                    
@@ -467,18 +472,29 @@ Applicants[["Name"]][1:10]
  [7] "Norske Skog Tasman Ltd"                      
  [8] "Pan Pac Forest Products Limited"             
  [9] "Graymont (NZ) Limited"                       
-[10] "Winstone Pulp International Limited"  
+[10] "Winstone Pulp International Limited" 
+[11] "Whakatane Mill Limited"                      
+[12] "Holcim (New Zealand) Limited"                
+[13] "ACI OPERATIONS NZ LIMITED"                   
+[14] "Fonterra Limited"                            
+[15] "Asaleo Care New Zealand Limited"
 
-slices <-c( 14.070207, 10.407692,  7.897573,  4.353470,  3.865433,  2.306629,  1.879433,  1.599929,  1.385445,  1.222905, 6.013198)
-labels <- c("NZ Steel","NZ Aluminium","Methanex","Fletcher","Oji Fibre","Ballance","Norske skog","Pan Pac Forest", "Graymont", "Winstone", "The rest 152 firms")
-percent <- round(slices/sum(slices)*100)
+# slices <-c( 14.070207, 10.407692,  7.897573,  4.353470,  3.865433,  2.306629,  1.879433,  1.599929,  1.385445,  1.222905, 6.013198)
+labels <- c("NZ Steel","NZ Aluminium","Methanex","Fletcher","Oji Fibre","Ballance","Norske skog","Pan Pac Forest", "Graymont", "Winstone","Whakatane Mill","Holcim","ACI","Fonterra", "The rest (151 firms)")
+percent <- round(slices/sum(slices)*100,1)
+percent 
+
 labels <- paste(labels, percent) # add percents to labels
 labels <- paste(labels,"%",sep="") # add "%" to labels
 labels 
- [1] "NZ Steel 26%"           "NZ Aluminium 19%"       "Methanex 14%"          
- [4] "Fletcher 8%"            "Oji Fibre 7%"           "Ballance 4%"           
- [7] "Norske skog 3%"         "Pan Pac Forest 3%"      "Graymont 3%"           
-[10] "Winstone 2%"            "The rest 152 firms 11%" 
+ [1] "NZ Steel 26.3%"            "NZ Aluminium 17.9%"       
+ [3] "Methanex 14.4%"            "Fletcher 8.2%"            
+ [5] "Oji Fibre 7.1%"            "Ballance 4.3%"            
+ [7] "Norske skog 3.2%"          "Pan Pac Forest 3%"        
+ [9] "Graymont 2.5%"             "Winstone 2.3%"            
+[11] "Whakatane Mill 2.1%"       "Holcim 1.7%"              
+[13] "ACI 0.7%"                  "Fonterra 0.5%"            
+[15] "The rest (151 firms) 5.8%"
 
 milliondollars <- round (slices,1)
 milliondollars 
@@ -497,28 +513,27 @@ mlabels
 palettepair11<-brewer.pal(11, "Paired")
 palettepair11 
 [1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C" "#FDBF6F" "#FF7F00" "#CAB2D6" "#6A3D9A" "#FFFF99"
-pair11 <- c(rep(1, 11))
-pair11
-[1] 1 1 1 1 1 1 1 1 1 1 1
-names(pair11)<- palettepair11
-pair11 
-#A6CEE3 #1F78B4 #B2DF8A #33A02C #FB9A99 #E31A1C #FDBF6F #FF7F00 #CAB2D6 #6A3D9A 
-      1       1       1       1       1       1       1       1       1       1 
-#FFFF99 
-      1
-pie(pair11, col= palettepair11)
+palettepair15 <-append(palettepair11, c("#C25200","#779FDA", "#B96A8A", "#38BEB6"))   # Rose of sharon Danube Tapestry Puerto Rico
+palettepair15 
+[1] "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C" "#FDBF6F"
+ [8] "#FF7F00" "#CAB2D6" "#6A3D9A" "#FFFF99" "#C25200" "#779FDA" "#B96A8A"
+[15] "#38BEB6"
+length(slices)  # 15
+length(labels)  # 15
+length(palettepair15)   #15
 
-png("Allocations-pie-percent-2010-2020-720.png", width=565, height=565, pointsize = 12)
-#png("Allocations-pie-percent-pie-2010-2020-720.png", width=720, height=720, pointsize = 14)
-#svg(filename ="Allocations-pie-precent-2010-2020_720-720.svg", width = 8, height = 8, pointsize = 14, onefile = FALSE, family = "sans", bg = "white")
-pie(slices,radius=0.9,clockwise =TRUE,labels = labels, col=palettepair11, main=expression(paste("Recipients of Industrial Allocation 2010 to 2020")))
-mtext(side=1,cex=0.9,line=1.9,"Data: https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/")
-mtext(side=1,cex=1,line=0.5,"Of 55 million emission units allocated to industry between 2010 and 2020\n89% went to ten companies")
+png("Allocations-pie-percent-2010-2020-720.png", width=565, height=565, pointsize = 11)
+#png("Allocations-pie-percent-pie-2010-2020-720.png", width=720, height=720, pointsize = 12)
+#svg(filename ="Allocations-pie-percent-2010-2020_720-720.svg", width = 8, height = 8, pointsize = 11, onefile = FALSE, family = "sans", bg = "white")
+# col= rainbow(15) or col=palettepair15
+pie(slices,radius=0.8,clockwise =TRUE,labels = labels,init.angle =-22.5, col= rainbow(15), cex.main=1.5,main=expression(paste("Recipients of free emission units Industrial Allocation 2010 to 2021")))
+mtext(side=1,cex=1,line=1.9,"Data: https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/")
+mtext(side=1,cex=1,line=0.5,"Of 62 million emission units allocated to industry between 2010 and 2021\n94% went to 14 companies")
 dev.off()   
 
 # How many units allocated to all applicants? 
 sum(Applicants[["Allocation"]])
-[1] 55001914
+[1] 61594972
 
 # select the top ten most generously allocated applicants
 Applicantstopten <- head(Applicants[order(Allocation,decreasing=TRUE),],10)
