@@ -56,7 +56,7 @@ How can that possibly be the case? It is because of the [electricity allocation 
 
 Industrial Allocation therefore "de-prices" and removes the emissions price signal from some energy sector emissions in addition to the direct industry process emissions.
 
-In a net sense Industrial Allocation is worse as a policy to reduce industry emissions than a complete exemption of industry from the emissions trading scheme. In a scenario of 100% exemption, at least all electricity and energy sector carbon emissions would in theory be priced.
+In a net sense Industrial Allocation is worse as a policy to reduce industry emissions than a complete exemption of industry from the emissions trading scheme. In a scenario of 100% exemption, at least all electricity and energy sector ETS carbon emissions passed on to industries would in theory be priced.
 
 # Industrial over allocation - why were there 55 million free emission units when total industry sector emissions were 53 million tonnes? 7 December 2022
 
@@ -64,7 +64,7 @@ How does it make any sense that the 55 million free emission units gifted to big
 
 In a [recent post](https://rwmjohnson.blogspot.com/2022/11/industrial-allocation-free-emissions.html) I noted that 55 million free emission units had been allocated to industries over the eleven years from 2010 to 2020. I presented a barplot of the 'Industrial Allocation' of free emissions units given to emitting industries by the Environmental Protection Authority under the New Zealand emissions trading scheme.
 
-![](Industrial-Allocation-barplot-2010-2020-720-540v1.svg)
+![](Industrial-Allocation-barplot-2010-2021-720-540.svg)
 
 I left open the question "is 55 million free emission units (over eleven years) a big number?"
 

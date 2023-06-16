@@ -7,8 +7,9 @@ NZ-ETS-settings-2023-2027-final-report-web-27-July-2022
 page 38 of NZ-ETS-settings-2023-2027-final-report-web-27-July-2022
 Our forecast of industrial free allocation volumes per year for 2023-2027 is given in the table below.
 6.4 6.3 6.3 6.2 6.1
+# 2021 https://www.epa.govt.nz/assets/Uploads/Documents/Emissions-Trading-Scheme/Reports/Industrial-Allocations/Industrial-Allocations-Final-Decisions_2022.xlsx
 
-https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/
+# 2020  https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/
 
 expand 2020 final allocation decisions New Zealand Steel Development Limited 2,030,166
 
@@ -19,6 +20,7 @@ https://environment.govt.nz/assets/publications/GhG-Inventory/Summary-emissions-
 https://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/eligibility/
 https://www.nzherald.co.nz/business/opinion-fairly-sharing-the-burden-is-necessary-for-climate-success/LT2DSAYNPOB4M5J77BMPXQUMJU/
 # load applications
+library(dplyr)
 library(readxl)
 library(RColorBrewer)
 getwd()
@@ -26,17 +28,14 @@ getwd()
 
 # obtain emission unit allocation to industry data from EPA Industrial Allocation webpage
 
-download.file("https://www.epa.govt.nz/assets/Uploads/Documents/Emissions-Trading-Scheme/Reports/Industrial-Allocations/Industrial-Allocations-Final-Decisions.xlsx", "Industrial-Allocations-Final-Decisions.xlsx") 
-trying URL 'https://www.epa.govt.nz/assets/Uploads/Documents/Emissions-Trading-Scheme/Reports/Industrial-Allocations/Industrial-Allocations-Final-Decisions.xlsx'
-Content type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' length 56684 bytes (55 KB)
-==================================================
-downloaded 55 KB 
-
+# not working 16/06/23 download.file("https://www.epa.govt.nz/assets/Uploads/Documents/Emissions-Trading-Scheme/Reports/Industrial-Allocations/Industrial-Allocations-Final-Decisions_2022.xlsx", "Industrial-Allocations-Final-Decisions_2022.xlsx") 
+# I check with gnumeric that its the latest IA sheet up to 2021. It is.
 # check how many worksheets
-excel_sheets("Industrial-Allocations-Final-Decisions.xlsx")
+excel_sheets("Industrial-Allocations-Final-Decisions_2022.xlsx")
 [1] "IA Final Decisions"
 
-Allocations <- read_excel("Industrial-Allocations-Final-Decisions.xlsx", sheet = "IA Final Decisions",skip=3)
+# read in final allocations of emission units to applicants
+Allocations <- read_excel("Industrial-Allocations-Final-Decisions_2022.xlsx", sheet = "IA Final Decisions",skip=3)
 
 # rename column variables - which are in an odd order
 colnames(Allocations) <- c("Activity","Name","Year", "Allocation") 
@@ -50,30 +49,46 @@ head(Allocations[,c("Year","Activity","Name","Allocation")])
 4 2010         Burnt lime               Perry Resources (2008) Ltd       4712
 5 2010         Burnt lime   Websters Hydrated Lime Company Limited        948
 6 2010   Carbamide (urea) Ballance Agri-Nutrients (Kapuni) Limited      93275 
+# check last 6 rows
+tail(Allocations[,c("Year","Activity","Name","Allocation")]) 
+# A tibble: 6 × 4
+   Year Activity                  Name                               Allocation
+  <dbl> <chr>                     <chr>                                   <dbl>
+1  2021 Reconstituted wood panels Daiken Southland Limited                19628
+2  2021 Reconstituted wood panels Fletcher Building Products Limited       3292
+3  2021 Reconstituted wood panels Juken New Zealand Ltd                    5215
+4  2021 Reconstituted wood panels Nelson Pine Industries Limited          28026
+5  2021 Tissue paper              Asaleo Care New Zealand Limited         36136
+6  2021 Whey powder               Fonterra Limited                         6312
 
 # reorder columns
 Allocations <- Allocations[,c("Year","Activity","Name","Allocation")] 
 names(Allocations)
 [1] "Year"       "Activity"   "Name"  "Allocation" 
+
 # make a csv file of allocations data
 write.table(Allocations, file = "Allocations.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
 # read in csv file if I need to later
 #Allocations<-read.csv("Allocations.csv")
 
-# How many emissions units have been given away from 2010 to 2020?
+# How many emissions units have been given away from 2010 to 2021?
 sum(Allocations[["Allocation"]])
-[1] 55001914 
-# 55 million
+[1] 61594972
+# 61.5 million
+
+# How many activities received units?
+sum(table(Allocations[["Activity"]]))
+summary(Allocations[["Activity"]])
 
 # How many emission units were allocated for each year and save as a dataframe
 Annualallocations <- aggregate(Allocations[["Allocation"]] ~ Year, Allocations, sum)
 
 # check the data frame
 str(Annualallocations) 
-'data.frame':	11 obs. of  2 variables:
+'data.frame':	12 obs. of  2 variables:
  $ Year                       : num  2010 2011 2012 2013 2014 ...
- $ Allocations[["Allocation"]]: num  1763232 3461556 3451147 4815810 4484100
-
+ $ Allocations[["Allocation"]]: num  1763232 3461556 3451147 4815810 4484100 ...
+ 
 # rename column variables
 colnames(Annualallocations) <- c("Year", "Allocation") 
 
@@ -81,142 +96,113 @@ colnames(Annualallocations) <- c("Year", "Allocation")
 Annualallocations["Allocation"] <- Annualallocations[["Allocation"]]/10^6
 
 str(Annualallocations) 
-'data.frame':	11 obs. of  2 variables:
+'data.frame':	12 obs. of  2 variables:
  $ Year      : num  2010 2011 2012 2013 2014 ...
- $ Allocation: num  1.76 3.46 3.45 4.82 4.48 ... 
+ $ Allocation: num  1.76 3.46 3.45 4.82 4.48 ...
 
-# obtain Greenhouse Gas Inventory 1990 to 2020 emissions summary data from MfE 
+# create csv file of data
+write.table(Annualallocations, file = "Annualallocations.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
+ 
+# How many activities receive free units ? 26 activities
 
-download.file("https://environment.govt.nz/assets/publications/GhG-Inventory/Summary-emissions-data.xlsx","2020-crf-summary-data.xlsx")
+Activities <- aggregate(Allocation ~ Activity, Allocations, sum)
+str(Activities)
+'data.frame':	26 obs. of  2 variables:
+ $ Activity  : chr  "Iron and steel manufacturing from iron sand" "Aluminium smelting" "Methanol" "Cementitious products" ...
+ $ Allocation: num  16338444 11036253 8841205 6083337 5491730 ... 
+
+summary(Activities)
+   Activity           Allocation      
+ Length:26          Min.   :   13545  
+ Class :character   1st Qu.:  151592  
+ Mode  :character   Median :  470916  
+                    Mean   : 2369037  
+                    3rd Qu.: 2070002  
+                    Max.   :16338444 
+
+# What are the first six activities receiving free emission units ?
+head((Activities)) 
+                                      Activity Allocation
+17 Iron and steel manufacturing from iron sand   16338444
+1                           Aluminium smelting   11036253
+20                                    Methanol    8841205
+7                        Cementitious products    6083337
+19                                 Market pulp    5491730
+3                             Carbamide (urea)    2628483
+
+# sort /order data by units allocated decreasing 
+https://www.statmethods.net/management/sorting.html
+
+attach(Activities)
+# order by largest to smallest
+Activities <- Activities[order(Allocation,decreasing=TRUE),]
+head((Activities)) 
+                                      Activity Allocation
+17 Iron and steel manufacturing from iron sand   16338444
+1                           Aluminium smelting   11036253
+20                                    Methanol    8841205
+7                        Cementitious products    6083337
+19                                 Market pulp    5491730
+3                             Carbamide (urea)    2628483 
+
+# create csv file of data
+write.table(Activities, file = "Activities.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
+# read data back into R
+Activities <-read.csv("Activities.csv")
+ 
+# 16/06/23 download latest detailed emissions data by category from Ministry for the Environment
+# https://environment.govt.nz/publications/new-zealands-greenhouse-gas-inventory-1990-2021/
+
+download.file("https://environment.govt.nz/assets/publications/climate-change/Time-series-emissions-data-by-category-presented-in-AR4-Excel-xlsx.xlsx","Time-series-emissions-data-by-category-2021.xlsx")
+# OR
+# 16/06/23 download latest summary inventory emissions data by category from Ministry for the Environment
+download.file("https://environment.govt.nz/assets/publications/climate-change/Summary-emissions-data-Excel-xlsx.xlsx","Summary-emissions-data-Excel.xlsx")
+ trying URL 'https://environment.govt.nz/assets/publications/climate-change/Summary-emissions-data-Excel-xlsx.xlsx'
+Content type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' length 32644 bytes (31 KB)
+==================================================
+downloaded 31 KB 
+
+# obtain Greenhouse Gas Inventory 1990 to 2020 emissions summary data from MfE  NO LONGER LATEST
+# download.file("https://environment.govt.nz/assets/publications/GhG-Inventory/Summary-emissions-data.xlsx","2020-crf-summary-data.xlsx")
 # check individual worksheets 
-excel_sheets("2020-crf-summary-data.xlsx")
+excel_sheets("Summary-emissions-data-Excel.xlsx")
 [1] "Emissions by sector" "Emissions by gas" 
 
 # read sector data into R from Excel file
-crfsummarydatasector <- read_excel("2020-crf-summary-data.xlsx", sheet = "Emissions by sector", range ="A2:I33", col_names = TRUE, skip =1,col_types = c("guess"))
+crfsummarydatasector <- read_excel("Summary-emissions-data-Excel.xlsx", sheet = "Emissions by sector", range ="A2:I34", col_names = TRUE, skip =1,col_types = c("guess"))
 
 # check dataframe
 str(crfsummarydatasector)
-tibble [31 × 9] (S3: tbl_df/tbl/data.frame)
- $ Year                                           : chr [1:31] "1990" "1991" "1992" "1993" ...
- $ Energy                                         : num [1:31] 23878 24368 26228 25763 26082 ...
- $ Industrial processes and product use (IPPU)    : num [1:31] 3580 3729 3374 3213 3083 ...
- $ Agriculture                                    : num [1:31] 33793 34023 33571 33956 35133 ...
- $ Waste                                          : num [1:31] 3943 4053 4155 4258 4142 ...
- $ Tokelau (gross emissions)                      : num [1:31] 3.17 3.28 3.24 3.21 3.17 ...
- $ Land use, land-use change and forestry (LULUCF): num [1:31] -21229 -23277 -23044 -23842 -23634 ...
- $ Net emissions (with LULUCF)                    : num [1:31] 43968 42899 44288 43353 44810 ...
- $ Gross emissions (without LULUCF)               : num [1:31] 65197 66176 67332 67194 68444 .. 
+tibble [32 × 9] (S3: tbl_df/tbl/data.frame)
+ $ Year                                           : chr [1:32] "1990" "1991" "1992" "1993" ...
+ $ Energy                                         : num [1:32] 23880 24346 26190 25711 26021 ...
+ $ Industrial processes and product use (IPPU)    : num [1:32] 3580 3729 3374 3214 3088 ...
+ $ Agriculture                                    : num [1:32] 33312 33557 33113 33506 34605 ...
+ $ Waste                                          : num [1:32] 3945 4053 4154 4260 4143 ...
+ $ Tokelau (gross emissions)                      : num [1:32] 3.17 3.28 3.24 3.21 3.17 ...
+ $ Land use, land-use change and forestry (LULUCF): num [1:32] -20171 -22161 -22015 -22935 -22910 ...
+ $ Net emissions (with LULUCF)                    : num [1:32] 44549 43528 44820 43758 44949 ...
+ $ Gross emissions (without LULUCF)               : num [1:32] 64720 65688 66835 66694 67859 ... 
 
-# make Year a numeric vector
+# change Year from character to numeric vector
 crfsummarydatasector[["Year"]] <- as.numeric(crfsummarydatasector[["Year"]]) 
 # revise and shorten column names
 colnames(crfsummarydatasector) <- c("Year", "Energy", "Industry", "Agriculture", "Waste", "Tokelau","LULUCF", "Net Emissions", "Gross Emissions") 
 # check Industry sector emissions from GHG Inventory
 str(crfsummarydatasector[["Industry"]])
-num [1:31] 3580 3729 3374 3213 3083 ... 
-------------------------------------------------------------------------------------------------------------
-# download detailed emissions by category from Ministry for the Environment
-
-download.file("https://environment.govt.nz/assets/publications/GhG-Inventory/Time-series-emissions-data-by-category.xlsx","Time-series-emissions-data-by-category-2020.xlsx")
-trying URL 'https://environment.govt.nz/assets/publications/GhG-Inventory/Time-series-emissions-data-by-category.xlsx'
-Content type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' length 1567250 bytes (1.5 MB)
-==================================================
-downloaded 1.5 MB
-
-# check names of worksheets
-excel_sheets("Time-series-emissions-data-by-category-2020.xlsx")
-[1] "All gases" "CO2"       "CH4"       "N2O"       "HFCs"      "PFCs"     
-[7] "SF6"  
-
-# read in inventory electricity generation emissions data byselecting electricity row 17 and row 18 "1.A.1.a  Public Electricity and Heat Production]" the row above 
-emissions <- read_excel("Time-series-emissions-data-by-category-2020.xlsx", sheet = "All gases",skip=10,range ="C11:AG17",col_types = c("guess")) 
-
-str(emissions) 
-tibble [6 × 31] (S3: tbl_df/tbl/data.frame)
- $ 1990: num [1:6] 43968 65197 23878 22449 5987 ....  
-class(emissions) 
-[1] "tbl_df"     "tbl"        "data.frame" 
-dim(emissions) 
-[1]  6 31 
-head(emissions,2)
-# A tibble: 2 × 31
-  `1990` `1991` `1992` `1993` `1994` `1995` `1996` `1997` `1998` `1999` `2000`
-   <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-1 43968. 42899. 44288. 43353. 44810. 46567. 49207. 51404. 48563. 47557. 48580.
-2 65197. 66176. 67332. 67194. 68444. 69013. 71191. 74027. 71822. 73576. 75515.
-# … with 20 more variables: `2001` <dbl>, `2002` <dbl>, `2003` <dbl>,
-#   `2004` <dbl>, `2005` <dbl>, `2006` <dbl>, `2007` <dbl>, `2008` <dbl>,
-#   `2009` <dbl>, `2010` <dbl>, `2011` <dbl>, `2012` <dbl>, `2013` <dbl>,
-#   `2014` <dbl>, `2015` <dbl>, `2016` <dbl>, `2017` <dbl>, `2018` <dbl>,
-#   `2019` <dbl>, `2020` <dbl>
-# electricity generation emissions are 6 row
-emissions[6,]
-A tibble: 1 × 31
-  `1990` `1991` `1992` `1993` `1994` `1995` `1996` `1997` `1998` `1999` `2000`
-   <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-1  3490.  3917.  5035.  4136.  3305.  3032.  4009.  5936.  4407.  5677.  5351. 
+num [1:32] 3580 3729 3374 3214 3088 ... 
 
 
-# A tibble: 1 × 31
-emissions <- as.numeric(emissions[6,])
-# convert from kts to million tonnes
-emissions <- emissions/10^3
-str(emissions) 
- num [1:31] 3.49 3.92 5.03 4.14 3.3 ...
-# create year vector 
-year <- c(1990:2020)
-
-# create dataframe
-electricityemissions2020 <- as.data.frame(cbind(year,emissions)) 
-
-#check data frame
-str(electricityemissions2020) 
-'data.frame':	31 obs. of  2 variables:
- $ year     : num  1990 1991 1992 1993 1994 ...
- $ emissions: num  3.49 3.92 5.03 4.14 3.3 ... 
-
-# save data
-write.table(electricityemissions2020, file = "electricityemissions2020.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE)
-# look at data for 2010 to 2020
-electricityemissions2020[21:31,] 
-  year emissions
-21 2010  5.565628
-22 2011  5.046879
-23 2012  6.454129
-24 2013  5.207118
-25 2014  4.245071
-26 2015  4.039734
-27 2016  3.060460
-28 2017  3.625903
-29 2018  3.481471
-30 2019  4.216066
-31 2020  4.617553 
-
-# read in annual allocations and e footprint data
-Annualallocations <- read.csv("Annualallocations.csv")
-# add electricity generation emissions 2010 to 2020 to allocations
-Annualallocations1 <- cbind(Annualallocations, emissions[21:31])
-str(Annualallocations1)
-'data.frame':	11 obs. of  3 variables:
- $ Year            : int  2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 ...
- $ Allocation      : num  1.76 3.46 3.45 4.82 4.48 ...
- $ emissions[21:31]: num  5.57 5.05 6.45 5.21 4.25 ...
-
-names(Annualallocations1) <- c("Year", "Allocation","ElectricityGHG")
-names(Annualallocations1) <- c("Year", "Allocation", "IndustryGHG", "unitdiscount", "AllocatedGHG", "ElectricityGHG")
-
------------------------------------------------------------------------------------------
 # create table that is industrial allocation of emission units
 Annualallocations[["Allocation"]] 
 [1] 1.763232 3.461556 3.451147 4.815810 4.484100 4.369366 4.307558 5.606415
- [9] 6.744229 8.282779 7.715722
-table1 <- matrix(c(Annualallocations[["Allocation"]]), nrow = 1, ncol=11, byrow=TRUE, dimnames = list(c("NZUs"),c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")))
+ [9] 6.744229 8.282779 7.715722 6.593058
+table1 <- matrix(c(Annualallocations[["Allocation"]]), nrow = 1, ncol=12, byrow=TRUE, dimnames = list(c("NZUs"),c("2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021")))
 table1
          2010     2011     2012    2013   2014     2015     2016     2017
 NZUs 1.763232 3.461556 3.451147 4.81581 4.4841 4.369366 4.307558 5.606415
-         2018     2019     2020
-NZUs 6.744229 8.282779 7.715722 
+         2018     2019     2020     2021
+NZUs 6.744229 8.282779 7.715722 6.593058 
 
 # select some colours for charts # convert hex to name
 # https://www.sunzhongwei.com/tools2/translate-color-code-to-name?lang=en 
@@ -236,7 +222,7 @@ display.brewer.pal(5,"Accent") # pastels
 display.brewer.pal("Dark2",n=5)  # 
 
 brewer.pal("Dark2",n=8)
-[1] "#1B9E77" "#D95F02" "#7570B3" "#E7298A" "#66A61E" "#E6AB02" "#A6761D" teal russet mauve pink green mustard tan gray
+[1] "#1B9E77" "#D95F02" "#7570B3" "#E7298A" "#66A61E" "#E6AB02" "#A6761D" teal russet mauve/"Deluge" pink green mustard tan gray
 [8] "#666666"
 brewer.pal("Dark2",n=3)
 [1] "#1B9E77" "#D95F02" "#7570B3"  # teal khaki mauve
@@ -247,13 +233,13 @@ brewer.pal("Dark2",n=4)
 # "E7298A" very light blue blue/mauve "#7570b3")
 
 # barplot chart of industrial allocation of emission units
-svg(filename ="Industrial-Allocation-barplot-2010-2020-720-540.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
-#png("Industrial-Allocation-barplot-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
+svg(filename ="Industrial-Allocation-barplot-2010-2021-720-540.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white")
+png("Industrial-Allocation-barplot-2010-2021-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(4, 4, 4, 1)+0.1)
-barplot(table1,ylim=c(0,9),las=1,space=c(0.1,1.1), beside = TRUE, col=c("#7570b3"))  
-title(cex.main=1.4,main="Emission units allocated to industry 2010 to 2020",ylab="emission units (millions)")
-mtext(side=1,line=2.5,cex=0.8,expression(paste("Source: EPA Industrial allocation decisions \nhttps://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/")))
-mtext(side=3,line=0,cex=1,expression(paste("From 2010 to 2020 industries were allocated 55 million free emission units")))
+barplot(table1,ylim=c(0,9),las=1,space=c(0.1,1.1), beside = TRUE, col=c("#7570b3"))  # mauve/Deluge
+title(cex.main=1.5,main=expression(paste("Emission units allocated to industry 2010 to 2021")),ylab="emission units (millions)")
+mtext(side=1,line=2.75,cex=0.8,expression(paste("Source: EPA Industrial allocation decisions \nhttps://www.epa.govt.nz/industry-areas/emissions-trading-scheme/industrial-allocations/decisions/")))
+mtext(side=3,line=0,cex=1,expression(paste("From 2010 to 2021 industries were allocated 62 million free emission units")))
 dev.off() 
 
 --------------------------------------------------------------
@@ -422,6 +408,7 @@ str(Applicants)
 
 # sort /order data by units allocated decreasing   https://www.statmethods.net/management/sorting.html
 attach(Applicants)
+
 Applicants <- Applicants[order(Allocation,decreasing=TRUE),]
 
 # create csv file of Applicants data
@@ -684,42 +671,7 @@ $ Value      <dbl> 3699201.18, 828791.52, 64219.74, 82836.96, 16665.84, 163977�
 names(Allocations)
 [1] "Year"       "Activity"   "Name"       "Allocation" "Value"
 
-# How many activities receive free units and how many units for each industrial Activity? 26 activities
 
-Activities <- aggregate(Allocation ~ Activity, Allocations, sum)
-str(Activities)
-'data.frame':	26 obs. of  2 variables:
- $ Activity  : chr  "Aluminium smelting" "Burnt lime" "Carbamide (urea)" "Carbon steel from cold ferrous feed" ...
- $ Allocation: int  10407692 1493104 2306629 240048 1112834 120302 5383349 13545 38342 80300 ..
-summary(Activities)
-  Activity           Allocation      
- Length:26          Min.   :   13545  
- Class :character   1st Qu.:  134646  
- Mode  :character   Median :  409914  
-                    Mean   : 2115458  
-                    3rd Qu.: 1873027  
-                    Max.   :14166823
-
-                    # What are the first five activities receiving free emission units ?
-head((Activities)) 
-                            Activity Allocation
-1                  Aluminium smelting   10407692
-2                          Burnt lime    1493104
-3                    Carbamide (urea)    2306629
-4 Carbon steel from cold ferrous feed     240048
-5                         Cartonboard    1112834
-6                        Caustic soda     120302 
-
-# sort /order data by units allocated decreasing 
-https://www.statmethods.net/management/sorting.html
-
-attach(Activities)
-# order by largest to smallest
-Activities <- Activities[order(Allocation,decreasing=TRUE),]
-# create csv file of data
-write.table(Activities, file = "Activities.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE) 
-# read data back into R
-Activities <-read.csv("Activities.csv")
 
 # print
 Activities
@@ -1197,3 +1149,97 @@ legend("topright", inset=c(0.0,0.0) ,bty="n",cex=1.2,c("Final allocation","Provi
 dev.off()
 
 
+===============================================
+
+------------------------------------------------------------------------------------------------------------
+# download detailed emissions by category from Ministry for the Environment
+
+download.file("https://environment.govt.nz/assets/publications/GhG-Inventory/Time-series-emissions-data-by-category.xlsx","Time-series-emissions-data-by-category-2020.xlsx")
+trying URL 'https://environment.govt.nz/assets/publications/GhG-Inventory/Time-series-emissions-data-by-category.xlsx'
+Content type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' length 1567250 bytes (1.5 MB)
+==================================================
+downloaded 1.5 MB
+
+# check names of worksheets
+excel_sheets("Time-series-emissions-data-by-category-2020.xlsx")
+[1] "All gases" "CO2"       "CH4"       "N2O"       "HFCs"      "PFCs"     
+[7] "SF6"  
+
+# read in inventory electricity generation emissions data byselecting electricity row 17 and row 18 "1.A.1.a  Public Electricity and Heat Production]" the row above 
+emissions <- read_excel("Time-series-emissions-data-by-category-2020.xlsx", sheet = "All gases",skip=10,range ="C11:AG17",col_types = c("guess")) 
+
+str(emissions) 
+tibble [6 × 31] (S3: tbl_df/tbl/data.frame)
+ $ 1990: num [1:6] 43968 65197 23878 22449 5987 ....  
+class(emissions) 
+[1] "tbl_df"     "tbl"        "data.frame" 
+dim(emissions) 
+[1]  6 31 
+head(emissions,2)
+# A tibble: 2 × 31
+  `1990` `1991` `1992` `1993` `1994` `1995` `1996` `1997` `1998` `1999` `2000`
+   <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
+1 43968. 42899. 44288. 43353. 44810. 46567. 49207. 51404. 48563. 47557. 48580.
+2 65197. 66176. 67332. 67194. 68444. 69013. 71191. 74027. 71822. 73576. 75515.
+# … with 20 more variables: `2001` <dbl>, `2002` <dbl>, `2003` <dbl>,
+#   `2004` <dbl>, `2005` <dbl>, `2006` <dbl>, `2007` <dbl>, `2008` <dbl>,
+#   `2009` <dbl>, `2010` <dbl>, `2011` <dbl>, `2012` <dbl>, `2013` <dbl>,
+#   `2014` <dbl>, `2015` <dbl>, `2016` <dbl>, `2017` <dbl>, `2018` <dbl>,
+#   `2019` <dbl>, `2020` <dbl>
+# electricity generation emissions are 6 row
+emissions[6,]
+A tibble: 1 × 31
+  `1990` `1991` `1992` `1993` `1994` `1995` `1996` `1997` `1998` `1999` `2000`
+   <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
+1  3490.  3917.  5035.  4136.  3305.  3032.  4009.  5936.  4407.  5677.  5351. 
+
+
+# A tibble: 1 × 31
+emissions <- as.numeric(emissions[6,])
+# convert from kts to million tonnes
+emissions <- emissions/10^3
+str(emissions) 
+ num [1:31] 3.49 3.92 5.03 4.14 3.3 ...
+# create year vector 
+year <- c(1990:2020)
+
+# create dataframe
+electricityemissions2020 <- as.data.frame(cbind(year,emissions)) 
+
+#check data frame
+str(electricityemissions2020) 
+'data.frame':	31 obs. of  2 variables:
+ $ year     : num  1990 1991 1992 1993 1994 ...
+ $ emissions: num  3.49 3.92 5.03 4.14 3.3 ... 
+
+# save data
+write.table(electricityemissions2020, file = "electricityemissions2020.csv", sep = ",", col.names = TRUE, qmethod = "double",row.names = FALSE)
+# look at data for 2010 to 2020
+electricityemissions2020[21:31,] 
+  year emissions
+21 2010  5.565628
+22 2011  5.046879
+23 2012  6.454129
+24 2013  5.207118
+25 2014  4.245071
+26 2015  4.039734
+27 2016  3.060460
+28 2017  3.625903
+29 2018  3.481471
+30 2019  4.216066
+31 2020  4.617553 
+
+# read in annual allocations and e footprint data
+Annualallocations <- read.csv("Annualallocations.csv")
+# add electricity generation emissions 2010 to 2020 to allocations
+Annualallocations1 <- cbind(Annualallocations, emissions[21:31])
+str(Annualallocations1)
+'data.frame':	11 obs. of  3 variables:
+ $ Year            : int  2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 ...
+ $ Allocation      : num  1.76 3.46 3.45 4.82 4.48 ...
+ $ emissions[21:31]: num  5.57 5.05 6.45 5.21 4.25 ...
+
+names(Annualallocations1) <- c("Year", "Allocation","ElectricityGHG")
+names(Annualallocations1) <- c("Year", "Allocation", "IndustryGHG", "unitdiscount", "AllocatedGHG", "ElectricityGHG")
+
+-----------------------------------------------------------------------------------------
