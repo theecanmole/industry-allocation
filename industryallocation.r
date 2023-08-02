@@ -49,6 +49,7 @@ head(Allocations[,c("Year","Activity","Name","Allocation")])
 4 2010         Burnt lime               Perry Resources (2008) Ltd       4712
 5 2010         Burnt lime   Websters Hydrated Lime Company Limited        948
 6 2010   Carbamide (urea) Ballance Agri-Nutrients (Kapuni) Limited      93275 
+
 # check last 6 rows
 tail(Allocations[,c("Year","Activity","Name","Allocation")]) 
 # A tibble: 6 × 4

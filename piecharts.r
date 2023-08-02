@@ -1,12 +1,39 @@
+library(RColorBrewer)
+
 Applicants <- read.csv( file = "Applicants.csv")
 
 str(Applicants)
-'data.frame':	162 obs. of  2 variables:
+'data.frame':	166 obs. of  2 variables:
  $ Name      : chr  "New Zealand Steel Development Limited" "New Zealand Aluminium Smelters Limited" "Methanex New Zealand Ltd" "Fletcher Concrete and Infrastructure Limited" ...
  $ Allocation: int  14070207 10407692 7897573 4353470 3865433 2306629 1879433 1599929 1385445 1222905 ... 
- 
+
+head(Applicants) 
+                                          Name Allocation
+1        New Zealand Steel Development Limited   16215689
+2       New Zealand Aluminium Smelters Limited   11036253
+3                     Methanex New Zealand Ltd    8841205
+4 Fletcher Concrete and Infrastructure Limited    5053458
+5             Oji Fibre Solutions (NZ) Limited    4403209
+6     Ballance Agri-Nutrients (Kapuni) Limited    2628483 
+head(Applicants,10) 
+                                           Name Allocation
+1         New Zealand Steel Development Limited   16215689
+2        New Zealand Aluminium Smelters Limited   11036253
+3                      Methanex New Zealand Ltd    8841205
+4  Fletcher Concrete and Infrastructure Limited    5053458
+5              Oji Fibre Solutions (NZ) Limited    4403209
+6      Ballance Agri-Nutrients (Kapuni) Limited    2628483
+7                        Norske Skog Tasman Ltd    1959598
+8               Pan Pac Forest Products Limited    1821769
+9                         Graymont (NZ) Limited    1544767
+10          Winstone Pulp International Limited    1408423 
+
 quantile(Applicants[["Allocation"]],0.75) 
-75% 41716 
+75% 
+50164.5 
+quantile(Applicants[["Allocation"]],0.9) 
+   90% 
+196788 
 
 # Pie Chart with Percentages
 
@@ -91,13 +118,32 @@ dev.off()
 
 ===================================================
 
-pie(Activities[["Allocation"]],radius=0.9,clockwise =TRUE,labels = Activities[["Activities"]], col=palettepair11, main=expression(paste("Activities of Industrial Allocation 2010 to 2020 by percent"))) 
+Activities <-read.csv("Activities.csv")
+head(Activities,10) 
+                                      Activity Allocation
+1  Iron and steel manufacturing from iron sand   16338444
+2                           Aluminium smelting   11036253
+3                                     Methanol    8841205
+4                        Cementitious products    6083337
+5                                  Market pulp    5491730
+6                             Carbamide (urea)    2628483
+7               Packaging and industrial paper    2106803
+8                                    Newsprint    1959598
+9                                   Burnt lime    1660200
+10                                 Cartonboard    1276451 
+
 
 Activities[["Allocation"]][1:10]
-[1] 14166823 10407692  7897573  5383349  4808292  2306629  1879433  1853810
- [9]  1493104  1112834
+[1] 16338444 11036253  8841205  6083337  5491730  2628483  2106803  1959598
+ [9]  1660200  1276451 
+Activities[["Allocation"]][11:26] 
+[1] 853672 610000 527785 414047 365712 279928 240048 233806 176797 143191
+[11] 131468  80300  42659  36366  23144  13545 
+sum(Activities[["Allocation"]][11:26]) 
+[1] 4172468 
+
 Activities[["Activity"]][1:10]
-[1] "Iron and steel manufacturing from iron sand"
+ [1] "Iron and steel manufacturing from iron sand"
  [2] "Aluminium smelting"                         
  [3] "Methanol"                                   
  [4] "Cementitious products"                      
@@ -108,11 +154,28 @@ Activities[["Activity"]][1:10]
  [9] "Burnt lime"                                 
 [10] "Cartonboard"   
 
+activitylabel <-c("Steel", "Aluminium","Methanol","Cement","Market pulp" ,"Urea","Newsprint","Packaging","Burnt lime","Cartonboard") 
+
+pie(Activities[["Allocation"]][1:10],radius=0.9,clockwise =TRUE,init.angle =45,labels = activitylabel, col=rainbow(10), cex.main=1.5, main=expression(paste("Free emission units allocated by industrial activity 2010 to 2021"))) 
+ 
+ 
 A1 <- Activities[["Allocation"]][1:10]/10^6
 A1
-[1] 14.166823 10.407692  7.897573  5.383349  4.808292  2.306629  1.879433
- [8]  1.853810  1.493104  1.112834
-alabel <- c(Activities[["Activity"]][1:10])
+[1] 16.338444 11.036253  8.841205  6.083337  5.491730  2.628483  2.106803
+ [8]  1.959598  1.660200  1.276451 
+ 
+A1 <- round(A1,1)
+A1 
+[1] 16.3 11.0  8.8  6.1  5.5  2.6  2.1  2.0  1.7  1.3
+
+labels <- paste(activitylabel, A1) # add values to labels
+labels <- paste(labels,"m",sep="") # add "$" to labels 
+labels 
+[1] "Steel 16.3m"      "Aluminium 11m"    "Methanol 8.8m"    "Cement 6.1m"     
+ [5] "Market pulp 5.5m" "Urea 2.6m"        "Newsprint 2.1m"   "Packaging 2m"    
+ [9] "Burnt lime 1.7m"  "Cartonboard 1.3m" 
+
+ alabel <- c(Activities[["Activity"]][1:10])
 alabel
 [1] "Iron and steel manufacturing from iron sand"
  [2] "Aluminium smelting"                         
@@ -124,6 +187,7 @@ alabel
  [8] "Packaging and industrial paper"             
  [9] "Burnt lime"                                 
 [10] "Cartonboard" 
+
 str(alabel)
 chr [1:10] "Iron and steel manufacturing from iron sand" ...
 

@@ -10,7 +10,7 @@ Here is a pie chart of the quantities of free emission units allocated to indust
 ![](Allocations-pie-quantity-2010-2020_720-7200.svg)
 
 Here is a pie chart of the percentages of free emission units allocated to industries. Again note the highly regressive distribution favouring major corporates. 89 percent of all units allocated went to ten companies.
-![](Allocations-pie-precent-2010-2020_720-720.svg)
+![](Allocations-pie-2010-2020_720-720.svg)
 
 Here is a barplot of the 53 million tonnes of actual emissions from the New Zealand industrial sector from the [Greenhouse Gas Inventory](https://environment.govt.nz/facts-and-science/climate-change/measuring-greenhouse-gas-emissions/about-new-zealands-greenhouse-gas-inventory/).
 
