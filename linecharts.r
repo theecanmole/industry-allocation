@@ -3,7 +3,7 @@
 svg(filename ="Industrial-Allocation-line-2010-2020-720-540-v1.svg", width = 8, height = 6, pointsize = 12, onefile = FALSE, family = "sans", bg = "white") 
 #png("Industrial-Allocation-line-2010-2020-560by420-v1.png", bg="white", width=560, height=420,pointsize = 12)
 par(mar=c(2.7,2.7,1,1)+0.1)
-plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="n",las=1)
+plot(Annualallocations[["Year"]],Annualallocations[["Allocation"]],ylim=c(0,10), xlim=c(2010,2020),tck=0.01,axes=FALSE,ann=FALSE, type="l",las=1)
 axis(side=1, tck=0.01, las=0, lwd = 1, at = c(2010:2020), labels = c(2010:2020), tick = TRUE)
 axis(side=2, tck=0.01, las=2, line = NA,lwd = 1, at = c(0:8), labels = c(0:8),tick = TRUE)
 axis(side=4, tck=0.01, at = c(0:8), labels = FALSE, tick = TRUE)

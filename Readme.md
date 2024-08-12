@@ -94,4 +94,4 @@ Okay we get it. It's "polluter pays". But the Industrial Allocation rules have g
 
 But it's worse than that. The allocations of emissions units are heavily weighted towards the highest quantity emitters: The top ten recipients received 89% of the units. The other 152 recipients got 11% of the units. New Zealand Aluminium Smelters Limited and New Zealand Steel Limited received about 45% of all the allocated free units.
 
-![](Allocations-pie-precent-2010-2020_720-720.svg)
+![](Allocations-pie-percent-2010-2020_720-720v2.svg)
